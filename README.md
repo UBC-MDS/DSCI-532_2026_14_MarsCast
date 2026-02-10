@@ -3,19 +3,24 @@
 Understanding weather conditions on Mars is critical for rover operations, mission planning, and the design of future exploration systems.  
 This project builds an interactive dashboard to explore and analyze historical Martian weather data collected by NASA’s *Curiosity Rover*.
 
-The dashboard is designed for **astronauts, space professionals, and mission planners** who need intuitive access to environmental insights on Mars.
-
 ---
 
 ## Overview
 
 This repository contains the code and resources to build a **Mars Weather Dashboard** using modern data visualization tools.  
-The dashboard answers key operational and scientific questions such as:
+The dashboard key **Scientific and Operational Goals** are:
 
-- What are the **current-like weather conditions** on Mars?
-- When is the **best time of the Martian year** to send new rovers?
-- How have weather conditions **changed over time**?
-- What **environmental limits** must future rovers be designed to withstand?
+1. **Monitoring Current Conditions**  
+   Track temperature, pressure, wind, and seasonal patterns to approximate present-day Martian weather.
+
+2. **Mission Planning**  
+   Identify safer windows in the Martian year for landing and surface operations.
+
+3. **Climate Trends Over Time**  
+   Analyze long-term changes and recurring seasonal behavior across multiple sols.
+
+4. **Engineering Constraints**  
+   Understand extreme conditions that future rovers must endure, informing design and testing requirements.
 
 ---
 
@@ -36,24 +41,6 @@ Weather observations from **Sol 1 (August 7, 2012 on Earth)** to **Sol 1895 (Feb
 The REMS instrument records atmospheric and ground-level variables, enabling long-term climate analysis on Mars.
 
 [Find here more information about the dataset.](https://github.com/the-pudding/data/tree/master/mars-weather)
-
----
-
-## Scientific and Operational Goals
-
-The dashboard focuses on four core objectives:
-
-1. **Monitoring Current Conditions**  
-   Track temperature, pressure, wind, and seasonal patterns to approximate present-day Martian weather.
-
-2. **Mission Planning**  
-   Identify safer windows in the Martian year for landing and surface operations.
-
-3. **Climate Trends Over Time**  
-   Analyze long-term changes and recurring seasonal behavior across multiple sols.
-
-4. **Engineering Constraints**  
-   Understand extreme conditions that future rovers must endure, informing design and testing requirements.
 
 ---
 
@@ -111,4 +98,57 @@ The dashboard prioritizes **clarity, interpretability, and operational relevance
 │
 └── notebooks/
     └── exploratory_data_analysis.ipynb
+```
+
+## Getting Started
+
+This project uses a Conda environment to ensure reproducibility across systems and teams.
+
+### Prerequisites
+
+Make sure you have one of the following installed:
+
+- Anaconda or
+- Miniconda
+
+Then, follow the next installation steps:
+
+**1. Clone the repository:**
+
+```bash
+git clone git@github.com:UBC-MDS/DSCI-532_2026_14_MarsCast.git
+```
+
+**2. Create the Environment**
+
+From the root of the repository, run:
+
+```bash
+conda env create -f environment.yml
+```
+
+**3. Activate the Environment**
+
+```bash
+conda activate mars_weather_dash_env
+```
+
+Verify Installation (Optional).  
+
+You can verify that the environment was created correctly by running:
+
+```bash
+conda list
+```
+
+or by launching Python:
+
+```bash
+python --version
+```
+
+**4. Launch the dashboard:**
+
+```bash
+shiny run app
 ```
