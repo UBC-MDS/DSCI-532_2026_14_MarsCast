@@ -95,9 +95,14 @@ The dashboard prioritizes **clarity, interpretability, and operational relevance
 │
 ├── src/
 │   └── app.py
+|
+├── img/
+│   └── sketch.png
 │
-└── notebooks/
-    └── exploratory_data_analysis.ipynb
+├── notebooks/
+|   └── exploratory_data_analysis.ipynb
+└── reports/
+    └── m1_proposal.md
 ```
 
 ## Getting Started
