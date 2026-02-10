@@ -152,3 +152,16 @@ python --version
 ```bash
 shiny run app
 ```
+
+
+## Acknowledgements
+
+- NASA’s Mars Science Laboratory
+- Centro de Astrobiología (CSIC-INTA)
+- The Curiosity Rover team
+
+Their work makes planetary-scale data science possible.
+
+## License
+
+This project is released under an open-source license. See [LICENSE](LICENSE) for details.
