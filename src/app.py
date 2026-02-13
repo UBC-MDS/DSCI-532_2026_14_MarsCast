@@ -8,6 +8,7 @@ df = pd.read_csv("data/raw/mars-weather.csv")
 df["terrestrial_date"] = pd.to_datetime(df["terrestrial_date"])
 
 # Reusable inline styles
+# Produced with the Help of Generative AI
 CARD_STYLE = "background-color:#b78850; box-shadow: 2px 2px 8px #000000; border-radius:26px; padding:18px;"
 FILTER_CARD_STYLE = "background-color:rgba(183,136,80,0.92); box-shadow: 0px 10px 22px rgba(0,0,0,0.28); border-radius:28px; padding:18px; border:1px solid rgba(255,255,255,0.18); min-height:150px;"
 KPI_PILL_STYLE = "background-color:rgba(143,29,29,0.92); box-shadow: 0px 10px 22px rgba(0,0,0,0.28); border-radius:44px; padding:22px 18px; min-height:120px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.18);"
