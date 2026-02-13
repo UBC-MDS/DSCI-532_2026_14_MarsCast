@@ -13,3 +13,4 @@ dependencies:
   - scipy
   - pytest
   - pip
+  - matplotlib
