@@ -1,9 +1,3 @@
----
-editor_options: 
-  markdown: 
-    wrap: 72
----
-
 # Dashboard proposal - MarsCast
 
 ## Section 1 - Motivation and Purpose
@@ -34,14 +28,13 @@ Earth) to Sol 1895 (February 27, 2018 on Earth). Each observation
 includes 10 associated variables that will be used to explore weather
 patterns on Mars:
 
--   **Record identifier:** id (unique observation identifier)
+- **Record identifier:** id (unique observation identifier)
 
--   **Temporal variables:** terrestrial_date, sol, ls (solar longitude),
-    month
+- **Temporal variables:** terrestrial_date, sol, ls (solar longitude), month
 
--   **Temperature measurements:** min_temp, max_temp
+- **Temperature measurements:** min_temp, max_temp
 
--   **Atmospheric conditions:** pressure, wind_speed, atmo_opacity
+- **Atmospheric conditions:** pressure, wind_speed, atmo_opacity
 
 New variables may be derived from this data, such as the average monthly
 minimum and maximum temperatures (avg_monthly_min_temp,
@@ -74,22 +67,39 @@ time when there is likely to be better conditions.
 
 ### User Stories
 
-1.  As a rover launch planner, I want to filter temperature and air
-    pressure measurements to be from only certain martian months, so I
-    can determine when will be the best time to plan the launch of our
-    new rover
-2.  As the lead rover engineer, I want to understand the "current"
-    weather conditions on Mars, to identify whether the weather
-    conditions may have contributed to the abnormal soil readings we
-    just received.
-3.  As a member of the rover engineering team, I want to explore the
-    relationship between air pressure and daily temperatures to better
-    understand the combined conditions that our new rover will need to
-    be able to withstand
-4.  As a climate modeller on the NASA rover team, I want to be able to
-    see changes in tempurature and air pressure over time to predict
-    what they may be in the future.
+1. As a rover launch planner, I want to filter temperature and air
+pressure measurements to be from only certain martian months, so I
+can determine when will be the best time to plan the launch of our
+new rover
+2. As the lead rover engineer, I want to understand the "current"
+weather conditions on Mars, to identify whether the weather
+conditions may have contributed to the abnormal soil readings we
+just received.
+3. As a member of the rover engineering team, I want to explore the
+relationship between air pressure and daily temperatures to better
+understand the combined conditions that our new rover will need to
+be able to withstand
+4. As a climate modeller on the NASA rover team, I want to be able to
+see changes in temperature and air pressure over time to predict
+what they may be in the future.
 
 ## Section 4 - Exploratory Data Analysis
 
+A complete EDA can be found in `notebooks/exploratory_data_analysis.ipynb`
+
+Some notable findings from the dataset exploration included:
+
+- 3 columns (`id`, `wind_speed`, and `atmo_opacity`) which will not be
+useful for our dashboard.
+- Clear cyclic behaviour in `min_temp`, `max_temp` and `air_pressure` lending
+themselves to time series visualizations suitable addressing User Stories 2 and 4.
+- Solar Longitude `ls` and martian month `month` are suitable for data
+filtration and segmentation, facilitating visualizations to serve User Story 1.
+
 ## Section 5 - App Sketch and Description
+
+![Dashboard App Sketch](../img/sketch.png)
+
+The app will have a front landing page showing the distribution of each numerical feature in the mars weather dataset. Additionally, it will include KPI cards allowing the user to quickly see the metrics that are most important to them. Furthermore, drop down menus for martian month and season will allow the user to engage interactively with the dashboard and explore how the different metrics vary by month and season.
+
+As we continue to develop this application other pages may include time series analysis and visualizations exploring the relationships between different weather metrics on Mars.
