@@ -98,22 +98,22 @@ app_ui = ui.page_fluid(
         # KPI row
         ui.layout_columns(
             ui.card(
-                ui.p("Latest Sol KPI", style=KPI_LABEL_STYLE),
+                ui.p("Latest Sol", style=KPI_LABEL_STYLE),
                 ui.div(ui.output_text("latest_sol"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE
             ),
             ui.card(
-                ui.p("AVG Min Temp KPI", style=KPI_LABEL_STYLE),
+                ui.p("AVG Min Temp", style=KPI_LABEL_STYLE),
                 ui.div(ui.output_text("avg_min"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE
             ),
             ui.card(
-                ui.p("AVG Max Temp KPI", style=KPI_LABEL_STYLE),
+                ui.p("AVG Max Temp", style=KPI_LABEL_STYLE),
                 ui.div(ui.output_text("avg_max"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE
             ),
             ui.card(
-                ui.p("Avg Pressure KPI", style=KPI_LABEL_STYLE),
+                ui.p("Avg Pressure", style=KPI_LABEL_STYLE),
                 ui.div(ui.output_text("avg_pressure"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE
             ),
