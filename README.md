@@ -8,7 +8,7 @@ This project builds an interactive dashboard to explore and analyze historical M
 ## Overview
 
 This repository contains the code and resources to build a **Mars Weather Dashboard** using modern data visualization tools.  
-The dashboard key **Scientific and Operational Goals** are:
+The key **Scientific and Operational Goals** of this dashboard are:
 
 1. **Monitoring Current Conditions**  
    Track temperature, pressure, wind, and seasonal patterns to approximate present-day Martian weather.
@@ -88,17 +88,14 @@ The dashboard prioritizes **clarity, interpretability, and operational relevance
 ├── CODE_OF_CONDUCT.md
 ├── team.txt
 ├── .gitignore
-│
 ├── data/
 │   └── raw/
 │       └── mars-weather.csv
-│
 ├── src/
 │   └── app.py
-|
 ├── img/
 │   └── sketch.png
-│
+│   └── data_dictionary.png
 ├── notebooks/
 |   └── exploratory_data_analysis.ipynb
 └── reports/
@@ -157,7 +154,6 @@ python --version
 ```bash
 shiny run app
 ```
-
 
 ## Acknowledgements
 
