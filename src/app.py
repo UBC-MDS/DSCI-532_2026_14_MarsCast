@@ -15,11 +15,11 @@ SEASON_MAP = {
 }
 
 RECENCY_MAP = {
-    "Last 6 Months": pd.DateOffset(months=6),
-    "Last 1 Year":   pd.DateOffset(years=1),
+    "Last Month": pd.DateOffset(months=1),
+    "Last 2 Months":   pd.DateOffset(months=2),
+    "Last 6 Months":  pd.DateOffset(months=6),
+    "Last 1 Year":  pd.DateOffset(years=1),
     "Last 2 Years":  pd.DateOffset(years=2),
-    "Last 3 Years":  pd.DateOffset(years=3),
-    "Last 5 Years":  pd.DateOffset(years=5),
 }
 
 # Reusable inline styles
@@ -27,7 +27,7 @@ RECENCY_MAP = {
 CARD_STYLE = "background-color:#b78850; box-shadow: 2px 2px 8px #000000; border-radius:26px; padding:18px;"
 FILTER_CARD_STYLE = "background-color:#98182E; box-shadow: 0px 10px 22px rgba(0,0,0,0.28); border-radius:20px; padding:6px 10px; border:1px solid rgba(255,255,255,0.18);"
 KPI_PILL_STYLE = "background-color:#B82020; box-shadow: 0px 10px 22px rgba(0,0,0,0.28); border-radius:44px; padding:10px 12px; min-height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.18);"
-PLOT_CARD_STYLE = "background-color:#FFAB26; box-shadow: 0px 8px 18px rgba(0,0,0,0.18); border-radius:18px; padding:10px;"
+PLOT_CARD_STYLE = "background-color:#FFAB26; box-shadow: 0px 8px 18px rgba(0,0,0,0.18); border-radius:18px; padding:5px;"
 CHART_SHELL_STYLE = "margin-top:18px; background-color:rgba(183,136,80,0.45); box-shadow: 0px 10px 22px rgba(0,0,0,0.24); border-radius:28px; padding:18px; border:1px solid rgba(255,255,255,0.18);"
 CHART_SCROLL_STYLE = "max-height:560px; overflow-y:auto; padding-right:8px;"
 
@@ -167,28 +167,67 @@ app_ui = ui.page_fluid(
 # Server
 def server(input, output, session):
 
-    @reactive.calc
-    def filtered_df():
+    def apply_filters(exclude=None):
+        """Apply all active filters except the one named in `exclude`."""
         filtered = df.copy()
 
-        if input.month() != "All":
+        if exclude != "month" and input.month() != "All":
             filtered = filtered[filtered["month"] == input.month()]
 
-        if input.season() != "All":
+        if exclude != "season" and input.season() != "All":
             lo, hi = SEASON_MAP[input.season()]
             filtered = filtered[(filtered["ls"] >= lo) & (filtered["ls"] < hi)]
 
-        start, end = sorted(input.date_range())
-        filtered = filtered[
-            (filtered["terrestrial_date"] >= pd.to_datetime(start))
-            & (filtered["terrestrial_date"] <= pd.to_datetime(end))
-        ]
+        if exclude != "date_range":
+            start, end = sorted(input.date_range())
+            filtered = filtered[
+                (filtered["terrestrial_date"] >= pd.to_datetime(start))
+                & (filtered["terrestrial_date"] <= pd.to_datetime(end))
+            ]
 
-        if input.recency() != "All":
+        if exclude != "recency" and input.recency() != "All":
             cutoff = filtered["terrestrial_date"].max() - RECENCY_MAP[input.recency()]
             filtered = filtered[filtered["terrestrial_date"] >= cutoff]
 
         return filtered
+
+    @reactive.calc
+    def filtered_df():
+        return apply_filters()
+
+    # --- Cascading filter updates ---
+
+    @reactive.effect
+    def _update_month_choices():
+        ctx = apply_filters(exclude="month")
+        present = set(ctx["month"].unique())
+        valid = ["All"] + [f"Month {n}" for n in range(1, 13) if f"Month {n}" in present]
+        selected = input.month() if input.month() in valid else "All"
+        ui.update_select("month", choices=valid, selected=selected)
+
+    @reactive.effect
+    def _update_season_choices():
+        ctx = apply_filters(exclude="season")
+        valid = ["All"] + [
+            name for name, (lo, hi) in SEASON_MAP.items()
+            if ((ctx["ls"] >= lo) & (ctx["ls"] < hi)).any()
+        ]
+        selected = input.season() if input.season() in valid else "All"
+        ui.update_select("season", choices=valid, selected=selected)
+
+    @reactive.effect
+    def _update_recency_choices():
+        ctx = apply_filters(exclude="recency")
+        if ctx.empty:
+            valid = ["All"]
+        else:
+            max_date = ctx["terrestrial_date"].max()
+            valid = ["All"] + [
+                name for name, offset in RECENCY_MAP.items()
+                if (ctx["terrestrial_date"] >= max_date - offset).any()
+            ]
+        selected = input.recency() if input.recency() in valid else "All"
+        ui.update_select("recency", choices=valid, selected=selected)
 
     # KPI Outputs
     @output
