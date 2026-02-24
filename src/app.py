@@ -1,4 +1,5 @@
 from shiny import App, ui, render, reactive
+from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -34,9 +35,7 @@ CHART_SCROLL_STYLE = "max-height:560px; overflow-y:auto; padding-right:8px;"
 BG_STYLE = """
 min-height:100vh;
 padding:24px 24px 40px 24px;
-background-image:
-  linear-gradient(#FE7701, rgba(205, 165, 105, 0.62)),
-  url('www/mars_bg.jpg');
+background-image: url('/mars_bg.png');
 background-size:cover;
 background-position:center;
 background-attachment:fixed;
@@ -291,4 +290,4 @@ def server(input, output, session):
         plt.tight_layout()
 
 
-app = App(app_ui, server)
+app = App(app_ui, server, static_assets=Path(__file__).parent / "www")
