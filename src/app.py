@@ -151,8 +151,8 @@ app_ui = ui.page_fluid(
                 ui.card(ui.output_plot("temp_series"), style=PLOT_CARD_STYLE),
                 ui.card(ui.output_plot("pressure_series"), style=PLOT_CARD_STYLE),
                 ui.layout_columns(
-                    ui.card(ui.output_plot("min_temp_plot"), style=PLOT_CARD_STYLE),
-                    ui.card(ui.output_plot("pressure_plot"), style=PLOT_CARD_STYLE),
+                    ui.card(ui.output_plot("pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
+                    ui.card(ui.output_plot("pressure_max_temp_plot"), style=PLOT_CARD_STYLE),
                     col_widths=(6, 6),
                 ),
             ),
@@ -271,7 +271,7 @@ def server(input, output, session):
         filtered = filtered_df()
         plt.figure(figsize=(10, 6))
         sns.lineplot(x = "terrestrial_date", y="pressure", data=filtered, color = '#FFAD70')
-        plt.ylabel("Pressure (Pa)")
+        plt.ylabel("Air Pressure (Pa)")
         plt.xlabel("Terrestrial date")
         plt.title("Daily average air pressure")
         plt.xticks(rotation=90)
@@ -279,21 +279,27 @@ def server(input, output, session):
 
     @output
     @render.plot
-    def pressure_plot():
+    def pressure_min_temp_plot():
         filtered = filtered_df()
         plt.figure()
-        plt.hist(filtered["pressure"], bins=20)
-        plt.title("Distribution of Pressure")
-        plt.tight_layout()
+        sns.scatterplot(x = "pressure", y="min_temp", data=filtered, color = '#FFAD70')
+        plt.ylabel("Temperature (C)")
+        plt.xlabel("Air Pressure (Pa)")
+        plt.title("Air Pressure and Minimum Temperature")
+        plt.xticks(rotation=90)
+        plt.plot(legend=False)
     
     @output
     @render.plot
-    def pressure_plot():
+    def pressure_max_temp_plot():
         filtered = filtered_df()
         plt.figure()
-        plt.hist(filtered["pressure"], bins=20)
-        plt.title("Distribution of Pressure")
-        plt.tight_layout()
+        sns.scatterplot(x = "pressure", y="max_temp", data=filtered, color = '#C1440E')
+        plt.ylabel("Temperature (C)")
+        plt.xlabel("Air Pressure (Pa)")
+        plt.title("Air Pressure and Maximum Temperature")
+        plt.xticks(rotation=90)
+        plt.plot(legend=False)
 
 
 app = App(app_ui, server, static_assets=Path(__file__).parent / "www")
