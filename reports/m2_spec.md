@@ -2,53 +2,30 @@
 
 ### Updated Job Stories
 
-+-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
-| \#    | Job Story                                                                                                                                                                                                                   | Status         | Notes                                                                                                             |
-+=======+=============================================================================================================================================================================================================================+================+===================================================================================================================+
-| 1     | As a rover launch planner, I want to filter temperature and air pressure measurements to be from only certain martian months or seasons, so I can determine when will be the best time to plan the launch of our new rover  | ✅ Implemented | Changed from only certain Martian months to certain months or seasons to allow filtering by broader time periods  |
-|       |                                                                                                                                                                                                                             |                |                                                                                                                   |
-|       |                                                                                                                                                                                                                             | 🔄 Revised     |                                                                                                                   |
-+-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
-| 2     | As the lead rover engineer, I want to understand the recent weather conditions on Mars, to identify whether the weather conditions may have contributed to the abnormal soil readings we just received.                     | ✅ Implemented | Changed from current to recent to accurately represent historical or recent data rather than real-time conditions |
-|       |                                                                                                                                                                                                                             |                |                                                                                                                   |
-|       |                                                                                                                                                                                                                             | 🔄 Revised     |                                                                                                                   |
-+-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
-| 3     | As a member of the rover engineering team, I want to explore the relationship between air pressure and daily temperatures to better understand the combined conditions that our new rover will need to be able to withstand | ⏳ Pending     |                                                                                                                   |
-+-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
-| 4     | As a climate modeller on the NASA rover team, I want to be able to see changes in temperature and air pressure over time to predict what they may be in the future.                                                         | ✅ Implemented |                                                                                                                   |
-+-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
+| \# | Job Story | Status | Notes |
+|---------------|---------------------------|---------------|----------------|
+| 1 | As a rover launch planner, I want to filter temperature and air pressure measurements to be from only certain martian months or seasons, so I can determine when will be the best time to plan the launch of our new rover | ✅ Implemented 🔄 Revised| Changed from only certain Martian months to certain months or seasons to allow filtering by broader time periods |
+| 2 | As the lead rover engineer, I want to understand the recent weather conditions on Mars, to identify whether the weather conditions may have contributed to the abnormal soil readings we just received. | ✅ Implemented 🔄 Revised | Changed from current to recent to accurately represent historical or recent data rather than real-time conditions |
+| 3 | As a member of the rover engineering team, I want to explore the relationship between air pressure and daily temperatures to better understand the combined conditions that our new rover will need to be able to withstand | ⏳ Pending |  |
+| 4 | As a climate modeller on the NASA rover team, I want to be able to see changes in temperature and air pressure over time to predict what they may be in the future. | ✅ Implemented |  |
 
 ### Component Inventory
 
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| ID                       | Type          | Shiny widget / renderer | Depends on                                                                                | Job story      |
-+==========================+===============+=========================+===========================================================================================+================+
-| `input_martian_month`    | Input         | `ui.input_slider()`     | —                                                                                         | #1             |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `input_season_selector`  | Input         | `ui.input_slider()`     | —                                                                                         | #1             |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `input_terrestrial_date` | Input         | `ui.input_slider()`     | —                                                                                         | #4             |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `input_recent_data`      | Input         | `ui.input_slider()`     | —                                                                                         | #2, #4         |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `filter_df`              | Reactive calc | `@reactive.calc`        | `input_martian_month`, `input_season_selector, input_terrestrial_date, input_recent_date` | #1, #2, #3, #4 |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `avg_min_temp`           | Output        | `@render.text`          | `filtered_df`                                                                             | #1, #2, #4     |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `avg_max_temp`           | Output        | `@render.text`          | `filtered_df`                                                                             | #1, #2, #4     |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `avg_pressure`           | Output        | `@render.text`          | `filtered_df`                                                                             | #1, #2, #4     |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `std_ressure`            | Output        | `@render.text`          | `filtered_df`                                                                             | #1, #2, #4     |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `sol_plot`               | Output        | `@render.plot`          | `filtered_df`                                                                             |                |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `ls_plot`                | Output        | `@render.plot`          | `filtered_df`                                                                             |                |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `min_temp_plot`          | Output        | `@render.plot`          | `filtered_df`                                                                             | #1, #2, #4     |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
-| `pressure_plot`          | Output        | `@render.plot`          | `filtered_df`                                                                             | #1, #2, #4     |
-+--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| ID | Type | Shiny widget / renderer | Depends on | Job story |
+|----|------|-------------------------|------------|-----------|
+| `input_martian_month` | Input | `ui.input_slider()` | — | #1 |
+| `input_season_selector` | Input | `ui.input_slider()` | — | #1 |
+| `input_terrestrial_date` | Input | `ui.input_slider()` | — | #4 |
+| `input_recent_data` | Input | `ui.input_slider()` | — | #2, #4 |
+| `filtered_df` | Reactive calc | `@reactive.calc` | `input_martian_month`, `input_season_selector`, `input_terrestrial_date`, `input_recent_data` | #1, #2, #3, #4 |
+| `avg_min_temp` | Output | `@render.text` | `filtered_df` | #1, #2, #4 |
+| `avg_max_temp` | Output | `@render.text` | `filtered_df` | #1, #2, #4 |
+| `avg_pressure` | Output | `@render.text` | `filtered_df` | #1, #2, #4 |
+| `std_pressure` | Output | `@render.text` | `filtered_df` | #1, #2, #4 |
+| `sol_plot` | Output | `@render.plot` | `filtered_df` | #3 |
+| `ls_plot` | Output | `@render.plot` | `filtered_df` | #3 |
+| `min_temp_plot` | Output | `@render.plot` | `filtered_df` | #1, #2, #4 |
+| `pressure_plot` | Output | `@render.plot` | `filtered_df` | #1, #2, #4 |
 
 ### Reactivity Diagram
 
