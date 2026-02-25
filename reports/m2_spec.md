@@ -1,168 +1,86 @@
-# Mars Weather Dashboard 🪐
+# App Specification
 
-Understanding weather conditions on Mars is critical for rover operations, mission planning, and the design of future exploration systems.  
-This project builds an interactive dashboard to explore and analyze historical Martian weather data collected by NASA’s *Curiosity Rover*.
+### Updated Job Stories
 
----
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
+| \#    | Job Story                                                                                                                                                                                                                   | Status         | Notes                                                                                                             |
++=======+=============================================================================================================================================================================================================================+================+===================================================================================================================+
+| 1     | As a rover launch planner, I want to filter temperature and air pressure measurements to be from only certain martian months or seasons, so I can determine when will be the best time to plan the launch of our new rover  | ✅ Implemented | Changed from only certain Martian months to certain months or seasons to allow filtering by broader time periods  |
+|       |                                                                                                                                                                                                                             |                |                                                                                                                   |
+|       |                                                                                                                                                                                                                             | 🔄 Revised     |                                                                                                                   |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
+| 2     | As the lead rover engineer, I want to understand the recent weather conditions on Mars, to identify whether the weather conditions may have contributed to the abnormal soil readings we just received.                     | ✅ Implemented | Changed from current to recent to accurately represent historical or recent data rather than real-time conditions |
+|       |                                                                                                                                                                                                                             |                |                                                                                                                   |
+|       |                                                                                                                                                                                                                             | 🔄 Revised     |                                                                                                                   |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
+| 3     | As a member of the rover engineering team, I want to explore the relationship between air pressure and daily temperatures to better understand the combined conditions that our new rover will need to be able to withstand | ⏳ Pending     |                                                                                                                   |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
+| 4     | As a climate modeller on the NASA rover team, I want to be able to see changes in temperature and air pressure over time to predict what they may be in the future.                                                         | ✅ Implemented |                                                                                                                   |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+----------------+-------------------------------------------------------------------------------------------------------------------+
 
-## Overview
+### Component Inventory
 
-This repository contains the code and resources to build a **Mars Weather Dashboard** using modern data visualization tools.  
-The key **Scientific and Operational Goals** of this dashboard are:
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| ID                       | Type          | Shiny widget / renderer | Depends on                                                                                | Job story      |
++==========================+===============+=========================+===========================================================================================+================+
+| `input_martian_month`    | Input         | `ui.input_slider()`     | —                                                                                         | #1             |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `input_season_selector`  | Input         | `ui.input_slider()`     | —                                                                                         | #1             |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `input_terrestrial_date` | Input         | `ui.input_slider()`     | —                                                                                         | #4             |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `input_recent_data`      | Input         | `ui.input_slider()`     | —                                                                                         | #2, #4         |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `filter_df`              | Reactive calc | `@reactive.calc`        | `input_martian_month`, `input_season_selector, input_terrestrial_date, input_recent_date` | #1, #2, #3, #4 |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `avg_min_temp`           | Output        | `@render.text`          | `filtered_df`                                                                             | #1, #2, #4     |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `avg_max_temp`           | Output        | `@render.text`          | `filtered_df`                                                                             | #1, #2, #4     |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `avg_pressure`           | Output        | `@render.text`          | `filtered_df`                                                                             | #1, #2, #4     |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `std_ressure`            | Output        | `@render.text`          | `filtered_df`                                                                             | #1, #2, #4     |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `sol_plot`               | Output        | `@render.plot`          | `filtered_df`                                                                             |                |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `ls_plot`                | Output        | `@render.plot`          | `filtered_df`                                                                             |                |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `min_temp_plot`          | Output        | `@render.plot`          | `filtered_df`                                                                             | #1, #2, #4     |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
+| `pressure_plot`          | Output        | `@render.plot`          | `filtered_df`                                                                             | #1, #2, #4     |
++--------------------------+---------------+-------------------------+-------------------------------------------------------------------------------------------+----------------+
 
-1. **Monitoring Current Conditions**  
-   Track temperature, pressure, wind, and seasonal patterns to approximate present-day Martian weather.
+### Reactivity Diagram
 
-2. **Mission Planning**  
-   Identify safer windows in the Martian year for landing and surface operations.
-
-3. **Climate Trends Over Time**  
-   Analyze long-term changes and recurring seasonal behavior across multiple sols.
-
-4. **Engineering Constraints**  
-   Understand extreme conditions that future rovers must endure, informing design and testing requirements.
-
----
-
-## Data Description
-
-### The dataset
-
-Weather observations from **Sol 1 (August 7, 2012 on Earth)** to **Sol 1895 (February 27, 2018 on Earth)**, measured directly on the surface of Mars.
-
-### Source & Methodology
-
-- Collected by the **Rover Environmental Monitoring Station (REMS)**  
-- On-board the **Curiosity Rover**
-- Publicly released by:
-  - NASA’s Mars Science Laboratory
-  - Centro de Astrobiología (CSIC-INTA)
-
-The REMS instrument records atmospheric and ground-level variables, enabling long-term climate analysis on Mars.
-
-[Find here more information about the dataset.](https://github.com/the-pudding/data/tree/master/mars-weather)
-
----
-
-## Tools & Technologies
-
-This project uses a combination of Python-based data science and interactive visualization tools:
-
-- **Pandas** – Data wrangling
-- **NumPy** – numerical operations and preprocessing
-- **Plotly** – interactive, exploratory visualizations
-- **Altair** – declarative statistical graphics
-- **Shiny (for Python)** – interactive dashboard framework
-
-These tools were chosen to balance **scientific rigor**, **interactivity**, and **clarity for decision-making**.
-
----
-
-## Dashboard Features (TBA)
-
-- ...
-
----
-
-## Target Audience
-
-This project is intended for:
-
-- Astronauts and mission planners  
-- Aerospace engineers  
-- Planetary scientists  
-- Space data analysts  
-
-The dashboard prioritizes **clarity, interpretability, and operational relevance** over purely academic analysis.
-
----
-
-## Project Structure
-
-```text
-├── README.md
-├── description.md
-├── environment.yml
-├── LICENSE
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── team.txt
-├── .gitignore
-├── data/
-│   └── raw/
-│       └── mars-weather.csv
-├── src/
-│   └── app.py
-├── img/
-│   └── sketch.png
-│   └── data_dictionary.png
-├── notebooks/
-|   └── exploratory_data_analysis.ipynb
-└── reports/
-    └── m1_proposal.md
+```` markdown
+```mermaid
+flowchart TD
+  A[/input_martian_month/] --> F{{filtered_df}}
+  B[/input_season_selector/] --> F
+  C[/input_terrestrial_date/] --> F
+  D[/input_recent_data/] --> F
+  F --> P1([avg_min_temp])
+  F --> P2([avg_max_temp])
+  F --> P3([avg_pressure])
+  F --> P4([std_pressure])
+  F --> P5([min_temp_plot])
+  F --> P6([pressure_plot])
 ```
+````
 
-## Getting Started
+### Calculation Details
 
-This project uses a Conda environment to ensure reproducibility across systems and teams.
+Main Data Filter
 
-### Prerequisites
-
-Make sure you have one of the following installed:
-
-- Anaconda or
-- Miniconda
-
-Then, follow the next installation steps:
-
-**1. Clone the repository:**
-
-```bash
-git clone git@github.com:UBC-MDS/DSCI-532_2026_14_MarsCast.git
-```
-
-**2. Create the Environment**
-
-From the root of the repository, run:
-
-```bash
-conda env create -f environment.yml
-```
-
-**3. Activate the Environment**
-
-```bash
-conda activate mars_weather_dash_env
-```
-
-Verify Installation (Optional).  
-
-You can verify that the environment was created correctly by running:
-
-```bash
-conda list
-```
-
-or by launching Python:
-
-```bash
-python --version
-```
-
-**4. Launch the dashboard:**
-
-```bash
-shiny run app
-```
-
-## Acknowledgements
-
-- NASA’s Mars Science Laboratory
-- Centro de Astrobiología (CSIC-INTA)
-- The Curiosity Rover team
-
-Their work makes planetary-scale data science possible.
-
-## License
-
-This project is released under an open-source license. See [LICENSE](LICENSE) for details.
+-   Inputs:
+    -   Martian Month
+    -   Season Selector
+    -   Terrestrial Date
+    -   Recent Data
+-   Transformation:
+    -   Filters all measurement data based on the selected inputs (e.g., Martian Month, Season, Terrestiral Date, or Recent Data Range)
+    -   Calculates the averages and standard deviation for relevant measurements (e.g. AVG Min Temp (C), AVG Max Temp (C), AVG Pressure (Pa), or STD Pressure (Pa))
+    -   Ensures that all filter options only show values valid given the other active filters (e.g., if a season is selected, the month filter only shows months within that season).
+-   Outputs:
+    -   Four KPI cards (AVG Min Temp (C), AVG Max Temp (C), AVG Pressure (Pa), STD Pressure (Pa))
+    -   Four plots (Distribution of Sol, Distribution of Solar Longtitude(ls), Distribution of Minimum Temperature, Distribution of Pressure)
