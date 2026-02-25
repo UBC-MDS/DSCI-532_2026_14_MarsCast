@@ -1,4 +1,5 @@
 from shiny import App, ui, render, reactive
+from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -24,32 +25,30 @@ RECENCY_MAP = {
 
 # Reusable inline styles
 # Produced with the Help of Generative AI
-CARD_STYLE = "background-color:#b78850; box-shadow: 2px 2px 8px #000000; border-radius:26px; padding:18px;"
-FILTER_CARD_STYLE = "background-color:#98182E; box-shadow: 0px 10px 22px rgba(0,0,0,0.28); border-radius:20px; padding:6px 10px; border:1px solid rgba(255,255,255,0.18);"
-KPI_PILL_STYLE = "background-color:#B82020; box-shadow: 0px 10px 22px rgba(0,0,0,0.28); border-radius:44px; padding:10px 12px; min-height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.18);"
-PLOT_CARD_STYLE = "background-color:#FFAB26; box-shadow: 0px 8px 18px rgba(0,0,0,0.18); border-radius:18px; padding:5px;"
-CHART_SHELL_STYLE = "margin-top:18px; background-color:rgba(183,136,80,0.45); box-shadow: 0px 10px 22px rgba(0,0,0,0.24); border-radius:28px; padding:18px; border:1px solid rgba(255,255,255,0.18);"
+CARD_STYLE = "background-color:rgba(20,6,6,0.82); box-shadow: 2px 2px 8px #000000; border-radius:26px; padding:18px;"
+FILTER_CARD_STYLE = "background-color:rgba(18,5,5,0.78); box-shadow: 0px 8px 24px rgba(0,0,0,0.55); border-radius:20px; padding:6px 10px; border:1px solid rgba(210,85,30,0.45); backdrop-filter:blur(6px);"
+KPI_PILL_STYLE = "background-color:rgba(10,2,2,0.85); box-shadow: 0px 8px 24px rgba(0,0,0,0.55); border-radius:44px; padding:10px 12px; min-height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid rgba(210,85,30,0.5); backdrop-filter:blur(6px);"
+PLOT_CARD_STYLE = "background-color:rgba(14,4,4,0.82); box-shadow: 0px 8px 24px rgba(0,0,0,0.55); border-radius:18px; padding:8px; border:1px solid rgba(210,85,30,0.4); backdrop-filter:blur(6px);"
+CHART_SHELL_STYLE = "margin-top:18px; background-color:rgba(10,2,2,0.60); box-shadow: 0px 10px 22px rgba(0,0,0,0.4); border-radius:28px; padding:18px; border:1px solid rgba(210,85,30,0.35); backdrop-filter:blur(4px);"
 CHART_SCROLL_STYLE = "max-height:560px; overflow-y:auto; padding-right:8px;"
 
 BG_STYLE = """
 min-height:100vh;
 padding:24px 24px 40px 24px;
-background-image:
-  linear-gradient(#FE7701, rgba(205, 165, 105, 0.62)),
-  url('www/mars_bg.jpg');
+background-image: url('/mars_bg.png');
 background-size:cover;
 background-position:center;
 background-attachment:fixed;
 """
 
-TITLE_STYLE = "text-align:center; color:#B82020; font-size:3.2em; font-weight:800; margin:6px 0 0 0; letter-spacing:0.5px;"
-SUBTITLE_STYLE = "text-align:center; color:#FFFFFF; font-weight:400; font-size:1.5em; margin:0 0 16px 0;"
-TOP_RULE_STYLE = "border:none; height:4px; background:rgba(178,35,35,0.35); border-radius:999px; margin:10px auto 18px auto; max-width:1200px;"
+TITLE_STYLE = "text-align:center; color:#FFFFFF; font-size:3.6em; font-weight:900; margin:6px 0 0 0; letter-spacing:1px; text-shadow: 0 2px 12px rgba(0,0,0,0.9), 0 0 40px rgba(220,80,20,0.7);"
+SUBTITLE_STYLE = "text-align:center; color:rgba(255,205,160,0.95); font-weight:400; font-size:1.3em; margin:0 0 16px 0; text-shadow: 0 1px 8px rgba(0,0,0,0.8); letter-spacing:0.3px;"
+TOP_RULE_STYLE = "border:none; height:1px; background:linear-gradient(to right, transparent, rgba(210,85,30,0.7), transparent); border-radius:999px; margin:10px auto 18px auto; max-width:1200px;"
 
-FILTER_H_STYLE = "text-align:center; color:#FFFFFF; font-weight:700; font-size:1.5em; margin:0 0 4px 0;"
-KPI_LABEL_STYLE = "color:white; font-weight:600; font-size:1.2em; text-align:center; margin:0 0 2px 0; letter-spacing:0.3px;"
+FILTER_H_STYLE = "text-align:center; color:#FFAD70; font-weight:700; font-size:0.95em; margin:0 0 4px 0; text-transform:uppercase; letter-spacing:0.8px;"
+KPI_LABEL_STYLE = "color:#FFAD70; font-weight:600; font-size:0.82em; text-align:center; margin:0 0 2px 0; letter-spacing:0.6px; text-transform:uppercase;"
 KPI_VALUE_STYLE = (
-    "color:white; font-weight:700; font-size:2.0em; text-align:center; margin:0;"
+    "color:#FFE8D0; font-weight:700; font-size:1.7em; text-align:center; margin:0; text-shadow: 0 1px 6px rgba(0,0,0,0.6);"
 )
 
 
@@ -291,4 +290,4 @@ def server(input, output, session):
         plt.tight_layout()
 
 
-app = App(app_ui, server)
+app = App(app_ui, server, static_assets=Path(__file__).parent / "www")
