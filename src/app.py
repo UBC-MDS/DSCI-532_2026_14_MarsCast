@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 # Loading the Data
 df = pd.read_csv("data/raw/mars-weather.csv")
@@ -147,11 +148,8 @@ app_ui = ui.page_fluid(
             {"style": CHART_SHELL_STYLE},
             ui.div(
                 {"style": CHART_SCROLL_STYLE},
-                ui.layout_columns(
-                    ui.card(ui.output_plot("sol_plot"), style=PLOT_CARD_STYLE),
-                    ui.card(ui.output_plot("ls_plot"), style=PLOT_CARD_STYLE),
-                    col_widths=(6, 6),
-                ),
+                ui.card(ui.output_plot("temp_series"), style=PLOT_CARD_STYLE),
+                ui.card(ui.output_plot("pressure_series"), style=PLOT_CARD_STYLE),
                 ui.layout_columns(
                     ui.card(ui.output_plot("min_temp_plot"), style=PLOT_CARD_STYLE),
                     ui.card(ui.output_plot("pressure_plot"), style=PLOT_CARD_STYLE),
@@ -255,31 +253,39 @@ def server(input, output, session):
 
     @output
     @render.plot
-    def sol_plot():
+    def temp_series():
         filtered = filtered_df()
-        plt.figure()
-        plt.hist(filtered["sol"], bins=20)
-        plt.title("Distribution of Sol")
-        plt.tight_layout()
+        plt.figure(figsize=(10, 6))
+        sns.lineplot(x = "terrestrial_date", y="min_temp", data=filtered, label='Minimum temperature', color = '#FFAD70')
+        sns.lineplot(x = "terrestrial_date", y="max_temp", data=filtered, label='Maximum temperature', color = '#C1440E')
+        plt.ylabel("Temperature (C)")
+        plt.xlabel("Terrestrial date")
+        plt.title("Daily average temperatures")
+        plt.xticks(rotation=90)
+        plt.plot(legend=False)
+
 
     @output
     @render.plot
-    def ls_plot():
+    def pressure_series():
         filtered = filtered_df()
-        plt.figure()
-        plt.hist(filtered["ls"], bins=20)
-        plt.title("Distribution of Solar Longitude (ls)")
-        plt.tight_layout()
+        plt.figure(figsize=(10, 6))
+        sns.lineplot(x = "terrestrial_date", y="pressure", data=filtered, color = '#FFAD70')
+        plt.ylabel("Pressure (Pa)")
+        plt.xlabel("Terrestrial date")
+        plt.title("Daily average air pressure")
+        plt.xticks(rotation=90)
+        plt.plot(legend=False)
 
     @output
     @render.plot
-    def min_temp_plot():
+    def pressure_plot():
         filtered = filtered_df()
         plt.figure()
-        plt.hist(filtered["min_temp"], bins=20)
-        plt.title("Distribution of Minimum Temperature")
+        plt.hist(filtered["pressure"], bins=20)
+        plt.title("Distribution of Pressure")
         plt.tight_layout()
-
+    
     @output
     @render.plot
     def pressure_plot():
