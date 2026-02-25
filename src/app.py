@@ -148,13 +148,13 @@ app_ui = ui.page_fluid(
             {"style": CHART_SHELL_STYLE},
             ui.div(
                 {"style": CHART_SCROLL_STYLE},
-                ui.card(ui.output_plot("temp_series"), style=PLOT_CARD_STYLE),
-                ui.card(ui.output_plot("pressure_series"), style=PLOT_CARD_STYLE),
                 ui.layout_columns(
                     ui.card(ui.output_plot("pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
                     ui.card(ui.output_plot("pressure_max_temp_plot"), style=PLOT_CARD_STYLE),
                     col_widths=(6, 6),
                 ),
+                ui.card(ui.output_plot("temp_series"), style=PLOT_CARD_STYLE),
+                ui.card(ui.output_plot("pressure_series"), style=PLOT_CARD_STYLE),
             ),
         ),
     )
