@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 # Loading the Data
 df = pd.read_csv("data/raw/mars-weather.csv")
@@ -148,15 +149,12 @@ app_ui = ui.page_fluid(
             ui.div(
                 {"style": CHART_SCROLL_STYLE},
                 ui.layout_columns(
-                    ui.card(ui.output_plot("sol_plot"), style=PLOT_CARD_STYLE),
-                    ui.card(ui.output_plot("ls_plot"), style=PLOT_CARD_STYLE),
+                    ui.card(ui.output_plot("pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
+                    ui.card(ui.output_plot("pressure_max_temp_plot"), style=PLOT_CARD_STYLE),
                     col_widths=(6, 6),
                 ),
-                ui.layout_columns(
-                    ui.card(ui.output_plot("min_temp_plot"), style=PLOT_CARD_STYLE),
-                    ui.card(ui.output_plot("pressure_plot"), style=PLOT_CARD_STYLE),
-                    col_widths=(6, 6),
-                ),
+                ui.card(ui.output_plot("temp_series"), style=PLOT_CARD_STYLE),
+                ui.card(ui.output_plot("pressure_series"), style=PLOT_CARD_STYLE),
             ),
         ),
     )
@@ -188,11 +186,21 @@ def server(input, output, session):
             cutoff = filtered["terrestrial_date"].max() - RECENCY_MAP[input.recency()]
             filtered = filtered[filtered["terrestrial_date"] >= cutoff]
 
+
         return filtered
 
     @reactive.calc
     def filtered_df():
         return apply_filters()
+    
+    @reactive.calc
+    def series_filtered():
+        filtered = filtered_df()
+        return    (
+            filtered.set_index("terrestrial_date")[["max_temp", "min_temp", "pressure"]]
+            .resample("1D").mean().reset_index()
+            )
+
 
     # --- Cascading filter updates ---
 
@@ -255,39 +263,53 @@ def server(input, output, session):
 
     @output
     @render.plot
-    def sol_plot():
-        filtered = filtered_df()
-        plt.figure()
-        plt.hist(filtered["sol"], bins=20)
-        plt.title("Distribution of Sol")
-        plt.tight_layout()
+    def temp_series():
+        filtered = series_filtered()
+        plt.figure(figsize=(10, 6))
+        plt.plot(filtered["terrestrial_date"], filtered["min_temp"], label='Minimum Temperature', color='#FFAD70')
+        plt.plot(filtered["terrestrial_date"], filtered["max_temp"], label='Maximum temperature', color='#C1440E')
+        plt.ylabel("Temperature (C)")
+        plt.xlabel("Terrestrial date")
+        plt.title("Daily average temperatures")
+        plt.xticks(rotation=90)
+        plt.plot(legend=False)
+
 
     @output
     @render.plot
-    def ls_plot():
-        filtered = filtered_df()
-        plt.figure()
-        plt.hist(filtered["ls"], bins=20)
-        plt.title("Distribution of Solar Longitude (ls)")
-        plt.tight_layout()
+    def pressure_series():
+        filtered = series_filtered()
+        plt.figure(figsize=(10, 6))
+        plt.plot(filtered["terrestrial_date"], filtered["pressure"], color = '#FFAD70')
+        plt.ylabel("Air Pressure (Pa)")
+        plt.xlabel("Terrestrial date")
+        plt.title("Daily average air pressure")
+        plt.xticks(rotation=90)
+        plt.plot(legend=False)
 
     @output
     @render.plot
-    def min_temp_plot():
+    def pressure_min_temp_plot():
         filtered = filtered_df()
         plt.figure()
-        plt.hist(filtered["min_temp"], bins=20)
-        plt.title("Distribution of Minimum Temperature")
-        plt.tight_layout()
-
+        sns.scatterplot(x = "pressure", y="min_temp", data=filtered, color = '#FFAD70')
+        plt.ylabel("Temperature (C)")
+        plt.xlabel("Air Pressure (Pa)")
+        plt.title("Air Pressure and Minimum Temperature")
+        plt.xticks(rotation=90)
+        plt.plot(legend=False)
+    
     @output
     @render.plot
-    def pressure_plot():
+    def pressure_max_temp_plot():
         filtered = filtered_df()
         plt.figure()
-        plt.hist(filtered["pressure"], bins=20)
-        plt.title("Distribution of Pressure")
-        plt.tight_layout()
+        sns.scatterplot(x = "pressure", y="max_temp", data=filtered, color = '#C1440E')
+        plt.ylabel("Temperature (C)")
+        plt.xlabel("Air Pressure (Pa)")
+        plt.title("Air Pressure and Maximum Temperature")
+        plt.xticks(rotation=90)
+        plt.plot(legend=False)
 
 
 app = App(app_ui, server, static_assets=Path(__file__).parent / "www")
