@@ -186,11 +186,21 @@ def server(input, output, session):
             cutoff = filtered["terrestrial_date"].max() - RECENCY_MAP[input.recency()]
             filtered = filtered[filtered["terrestrial_date"] >= cutoff]
 
+
         return filtered
 
     @reactive.calc
     def filtered_df():
         return apply_filters()
+    
+    @reactive.calc
+    def series_filtered():
+        filtered = filtered_df()
+        return    (
+            filtered.set_index("terrestrial_date")[["max_temp", "min_temp", "pressure"]]
+            .resample("1D").mean().reset_index()
+            )
+
 
     # --- Cascading filter updates ---
 
@@ -254,10 +264,10 @@ def server(input, output, session):
     @output
     @render.plot
     def temp_series():
-        filtered = filtered_df()
+        filtered = series_filtered()
         plt.figure(figsize=(10, 6))
-        sns.lineplot(x = "terrestrial_date", y="min_temp", data=filtered, label='Minimum temperature', color = '#FFAD70')
-        sns.lineplot(x = "terrestrial_date", y="max_temp", data=filtered, label='Maximum temperature', color = '#C1440E')
+        plt.plot(filtered["terrestrial_date"], filtered["min_temp"], label='Minimum Temperature', color='#FFAD70')
+        plt.plot(filtered["terrestrial_date"], filtered["max_temp"], label='Maximum temperature', color='#C1440E')
         plt.ylabel("Temperature (C)")
         plt.xlabel("Terrestrial date")
         plt.title("Daily average temperatures")
@@ -268,9 +278,9 @@ def server(input, output, session):
     @output
     @render.plot
     def pressure_series():
-        filtered = filtered_df()
+        filtered = series_filtered()
         plt.figure(figsize=(10, 6))
-        sns.lineplot(x = "terrestrial_date", y="pressure", data=filtered, color = '#FFAD70')
+        plt.plot(filtered["terrestrial_date"], filtered["pressure"], color = '#FFAD70')
         plt.ylabel("Air Pressure (Pa)")
         plt.xlabel("Terrestrial date")
         plt.title("Daily average air pressure")
