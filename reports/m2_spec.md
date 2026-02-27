@@ -105,3 +105,7 @@ Main Data Filter
 -   Outputs:
     -   Four KPI cards (AVG Min Temp (C), AVG Max Temp (C), AVG Pressure (Pa), STD Pressure (Pa))
     -   Four plots (Air Pressure with Minimum Temperature, Air Pressure with Maximum Temperature, Daily Average Temperatures, Daily Average Air Pressure)
+
+### Complexity Enhancement
+
+A reset button is added to the dashboard. It restores all filters to their default values, allowing users to quickly start over and avoid manually undoing changes. This makes the dashboard more user-friendly and efficient.
