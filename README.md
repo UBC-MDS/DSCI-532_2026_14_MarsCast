@@ -67,9 +67,14 @@ These tools were chosen to balance **scientific rigor**, **interactivity**, and 
 
 ---
 
-## Dashboard Features (TBA)
+## Dashboard Features
 
-- ...
+- **Interactive filtering** by Martian month and season to focus analysis on specific periods
+- **Recent data view** to inspect the most recent segment of the dataset  
+- **Time window control** using terrestrial date range filtering for targeted trend inspection  
+- **KPI summary cards** for the filtered subset: average min temperature, average max temperature, average pressure, and pressure standard deviation  
+- **Relationship plots** to explore how air pressure relates to daily temperatures (pressure vs min temp; pressure vs max temp)  
+- **Time series plots** showing temperature and pressure trends over sols, updating live with filter changes  
 
 ---
 
