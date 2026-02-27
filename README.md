@@ -3,11 +3,16 @@
 Understanding weather conditions on Mars is critical for rover operations, mission planning, and the design of future exploration systems.  
 This project builds an interactive dashboard to explore and analyze historical Martian weather data collected by NASA’s *Curiosity Rover*.
 
-Stable Dashboard Deployment: https://019c9d15-df54-9f49-50d4-2e3049587ef1.share.connect.posit.cloud/
+## Deployed App
 
-Live Development Dashboard: https://019c9156-8ae1-416d-aa21-8c41b68632bf.share.connect.posit.cloud/
+- Stable Dashboard Deployment: https://019c9d15-df54-9f49-50d4-2e3049587ef1.share.connect.posit.cloud/
+- Live Development Dashboard: https://019c9156-8ae1-416d-aa21-8c41b68632bf.share.connect.posit.cloud/
 
 ---
+
+## Demo
+
+![MarsCast demo](img/demo.gif)
 
 ## Overview
 
@@ -89,6 +94,7 @@ The dashboard prioritizes **clarity, interpretability, and operational relevance
 ├── environment.yml
 ├── LICENSE
 ├── CONTRIBUTING.md
+├── CHANGELOG.md
 ├── CODE_OF_CONDUCT.md
 ├── team.txt
 ├── .gitignore
@@ -97,14 +103,21 @@ The dashboard prioritizes **clarity, interpretability, and operational relevance
 │       └── mars-weather.csv
 ├── src/
 │   └── app.py
+│   └── www/
+│       └── mars_bg.png
 ├── img/
 │   └── sketch.png
 │   └── data_dictionary.png
+│   └── reactivity_diagram.png
+│   └── demo.gif
 ├── notebooks/
 |   └── exploratory_data_analysis.ipynb
 └── reports/
     └── m1_proposal.md
+    └── m2_spec.md
 ```
+
+## For Contributors
 
 ## Getting Started
 
@@ -158,6 +171,8 @@ python --version
 ```bash
 shiny run src/app.py
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ## Acknowledgements
 
