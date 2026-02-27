@@ -46,6 +46,7 @@ TITLE_STYLE = "text-align:center; color:#FFFFFF; font-size:3.6em; font-weight:90
 SUBTITLE_STYLE = "text-align:center; color:rgba(255,205,160,0.95); font-weight:400; font-size:1.3em; margin:0 0 16px 0; text-shadow: 0 1px 8px rgba(0,0,0,0.8); letter-spacing:0.3px;"
 TOP_RULE_STYLE = "border:none; height:1px; background:linear-gradient(to right, transparent, rgba(210,85,30,0.7), transparent); border-radius:999px; margin:10px auto 18px auto; max-width:1200px;"
 
+RESET_BUTTON_STYLE = "color:#FFAD70; font-weight:600; font-size:1em"
 FILTER_H_STYLE = "text-align:center; color:#FFAD70; font-weight:700; font-size:0.95em; margin:0 0 4px 0; text-transform:uppercase; letter-spacing:0.8px;"
 KPI_LABEL_STYLE = "color:#FFAD70; font-weight:600; font-size:0.82em; text-align:center; margin:0 0 2px 0; letter-spacing:0.6px; text-transform:uppercase;"
 KPI_VALUE_STYLE = (
@@ -63,6 +64,16 @@ app_ui = ui.page_fluid(
         ui.h1("MarsCast", style=TITLE_STYLE),
         ui.h4("Weather Patterns from The Red Planet", style=SUBTITLE_STYLE),
         ui.tags.hr(style=TOP_RULE_STYLE),
+        # Reset Button
+        ui.div(
+            ui.input_action_button(
+                "reset_all",
+                "Reset",
+                class_="btn btn-sm btn-outline-secondary",
+                style=RESET_BUTTON_STYLE
+            ),
+            style="display:flex; justify-content:flex-end; margin-bottom:12px;"
+        ),
         # Filters
         ui.layout_columns(
             ui.card(
@@ -235,6 +246,17 @@ def server(input, output, session):
             ]
         selected = input.recency() if input.recency() in valid else "All"
         ui.update_select("recency", choices=valid, selected=selected)
+    
+    @reactive.effect
+    @reactive.event(input.reset_all)
+    def _reset_filters():
+        ui.update_select("month", selected="All")
+        ui.update_select("season", selected="All")
+        ui.update_select("recency", selected="All")
+        ui.update_date_range("date_range",
+                             start=df["terrestrial_date"].min(),
+                             end=df["terrestrial_date"].max()
+                            )
 
     # KPI Outputs
     @output
