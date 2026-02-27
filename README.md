@@ -156,7 +156,7 @@ python --version
 **4. Launch the dashboard:**
 
 ```bash
-shiny run app
+shiny run src/app.py
 ```
 
 ## Acknowledgements
