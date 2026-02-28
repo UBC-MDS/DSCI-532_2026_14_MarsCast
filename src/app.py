@@ -9,6 +9,7 @@ import seaborn as sns
 df = pd.read_csv("data/raw/mars-weather.csv")
 df["terrestrial_date"] = pd.to_datetime(df["terrestrial_date"])
 
+
 SEASON_MAP = {
     "Autumn": (0, 90),
     "Winter": (90, 180),
@@ -133,22 +134,22 @@ app_ui = ui.page_fluid(
         # KPI row
         ui.layout_columns(
             ui.card(
-                ui.p("AVG Min Temp (C)", style=KPI_LABEL_STYLE),
+                ui.p("Avg Min Temperature", style=KPI_LABEL_STYLE),
                 ui.div(ui.output_text("avg_min"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE,
             ),
             ui.card(
-                ui.p("AVG Max Temp (C)", style=KPI_LABEL_STYLE),
+                ui.p("Avg Max Temperature", style=KPI_LABEL_STYLE),
                 ui.div(ui.output_text("avg_max"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE,
             ),
             ui.card(
-                ui.p("AVG Pressure (Pa)", style=KPI_LABEL_STYLE),
+                ui.p("Avg Air Pressure", style=KPI_LABEL_STYLE),
                 ui.div(ui.output_text("avg_pressure"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE,
             ),
             ui.card(
-                ui.p("STD Pressure (Pa)", style=KPI_LABEL_STYLE),
+                ui.p("Pressure Variability (Std Dev)", style=KPI_LABEL_STYLE),
                 ui.div(ui.output_text("std_pressure"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE,
             ),
@@ -263,25 +264,25 @@ def server(input, output, session):
     @render.text
     def avg_min():
         filtered = filtered_df()
-        return f"{filtered['min_temp'].mean():.2f}" if not filtered.empty else "N/A"
+        return f"{filtered['min_temp'].mean():.2f} °C" if not filtered.empty else "N/A"
 
     @output
     @render.text
     def avg_max():
         filtered = filtered_df()
-        return f"{filtered['max_temp'].mean():.2f}" if not filtered.empty else "N/A"
+        return f"{filtered['max_temp'].mean():.2f} °C" if not filtered.empty else "N/A"
 
     @output
     @render.text
     def avg_pressure():
         filtered = filtered_df()
-        return f"{filtered['pressure'].mean():.2f}" if not filtered.empty else "N/A"
+        return f"{filtered['pressure'].mean():.2f} Pa" if not filtered.empty else "N/A"
 
     @output
     @render.text
     def std_pressure():
         filtered = filtered_df()
-        return f"{filtered['pressure'].std():.2f}" if not filtered.empty else "N/A"
+        return f"{filtered['pressure'].std():.2f} Pa" if not filtered.empty else "N/A"
 
     @output
     @render.plot
