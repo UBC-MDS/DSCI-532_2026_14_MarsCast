@@ -59,117 +59,149 @@ DATE_CARD_WRAP_STYLE = FILTER_CARD_STYLE + "position:relative; padding-top:6px;"
 
 
 # UI Section
-app_ui = ui.page_fluid(
-    ui.div(
-        {"style": BG_STYLE},
-        ui.h1("MarsCast", style=TITLE_STYLE),
-        ui.h4("Weather Patterns from The Red Planet", style=SUBTITLE_STYLE),
-        ui.tags.hr(style=TOP_RULE_STYLE),
-        # Reset Button
-        ui.div(
-            ui.input_action_button(
-                "reset_all",
-                "Reset",
-                class_="btn btn-sm btn-outline-secondary",
-                style=RESET_BUTTON_STYLE
-            ),
-            style="display:flex; justify-content:flex-end; margin-bottom:12px;"
-        ),
-        # Filters
-        ui.layout_columns(
-            ui.card(
-                ui.h5("Martian Month", style=FILTER_H_STYLE),
+app_ui = ui.page_navbar(
+    *[
+        # Dashboard 
+        ui.nav_panel(
+            "Dashboard",
+            ui.page_fluid(
                 ui.div(
-                    ui.input_select(
-                        "month",
-                        None,
-                        choices=["All"] + [f"Month {n}" for n in range(1, 13)],
-                        selected="All",
+                    {"style": BG_STYLE},
+                    ui.h1("MarsCast", style=TITLE_STYLE),
+                    ui.h4("Weather Patterns from The Red Planet", style=SUBTITLE_STYLE),
+                    ui.tags.hr(style=TOP_RULE_STYLE),
+                    # Reset Button
+                    ui.div(
+                        ui.input_action_button(
+                            "reset_all",
+                            "Reset",
+                            class_="btn btn-sm btn-outline-secondary",
+                            style=RESET_BUTTON_STYLE
+                        ),
+                        style="display:flex; justify-content:flex-end; margin-bottom:12px;"
                     ),
-                    style="display:flex; justify-content:center;",
-                ),
-                style=FILTER_CARD_STYLE,
-            ),
-            ui.card(
-                ui.h5("Season Selector", style=FILTER_H_STYLE),
-                ui.div(
-                    ui.input_select(
-                        "season",
-                        None,
-                        choices=["All", "Spring", "Summer", "Autumn", "Winter"],
-                        selected="All",
+                    # Filters
+                    ui.layout_columns(
+                        ui.card(
+                            ui.h5("Martian Month", style=FILTER_H_STYLE),
+                            ui.div(
+                                ui.input_select(
+                                    "month",
+                                    None,
+                                    choices=["All"] + [f"Month {n}" for n in range(1, 13)],
+                                    selected="All",
+                                ),
+                                style="display:flex; justify-content:center;",
+                            ),
+                            style=FILTER_CARD_STYLE,
+                        ),
+                        ui.card(
+                            ui.h5("Season Selector", style=FILTER_H_STYLE),
+                            ui.div(
+                                ui.input_select(
+                                    "season",
+                                    None,
+                                    choices=["All", "Spring", "Summer", "Autumn", "Winter"],
+                                    selected="All",
+                                ),
+                                style="display:flex; justify-content:center;",
+                            ),
+                            style=FILTER_CARD_STYLE,
+                        ),
+                        ui.card(
+                            ui.div("Terrestrial Date", style=FILTER_H_STYLE),
+                            ui.div(
+                                ui.input_date_range(
+                                    "date_range",
+                                    None,
+                                    start=df["terrestrial_date"].min(),
+                                    end=df["terrestrial_date"].max(),
+                                ),
+                                style="display:flex; justify-content:center;",
+                            ),
+                            style=DATE_CARD_WRAP_STYLE,
+                        ),
+                        ui.card(
+                            ui.h5("Recent Data", style=FILTER_H_STYLE),
+                            ui.div(
+                                ui.input_select(
+                                    "recency",
+                                    None,
+                                    choices=["All"] + list(RECENCY_MAP.keys()),
+                                    selected="All",
+                                ),
+                                style="display:flex; justify-content:center;",
+                            ),
+                            style=FILTER_CARD_STYLE,
+                        ),
+                        col_widths=(3, 3, 3, 3),
                     ),
-                    style="display:flex; justify-content:center;",
-                ),
-                style=FILTER_CARD_STYLE,
-            ),
-            ui.card(
-                ui.div("Terrestrial Date", style=FILTER_H_STYLE),
-                ui.div(
-                    ui.input_date_range(
-                        "date_range",
-                        None,
-                        start=df["terrestrial_date"].min(),
-                        end=df["terrestrial_date"].max(),
+                    # KPI row
+                    ui.layout_columns(
+                        ui.card(
+                            ui.p("Avg Min Temperature", style=KPI_LABEL_STYLE),
+                            ui.div(ui.output_text("avg_min"), style=KPI_VALUE_STYLE),
+                            style=KPI_PILL_STYLE,
+                        ),
+                        ui.card(
+                            ui.p("Avg Max Temperature", style=KPI_LABEL_STYLE),
+                            ui.div(ui.output_text("avg_max"), style=KPI_VALUE_STYLE),
+                            style=KPI_PILL_STYLE,
+                        ),
+                        ui.card(
+                            ui.p("Avg Air Pressure", style=KPI_LABEL_STYLE),
+                            ui.div(ui.output_text("avg_pressure"), style=KPI_VALUE_STYLE),
+                            style=KPI_PILL_STYLE,
+                        ),
+                        ui.card(
+                            ui.p("Pressure Variability (Std Dev)", style=KPI_LABEL_STYLE),
+                            ui.div(ui.output_text("std_pressure"), style=KPI_VALUE_STYLE),
+                            style=KPI_PILL_STYLE,
+                        ),
+                        col_widths=(3, 3, 3, 3),
                     ),
-                    style="display:flex; justify-content:center;",
-                ),
-                style=DATE_CARD_WRAP_STYLE,
-            ),
-            ui.card(
-                ui.h5("Recent Data", style=FILTER_H_STYLE),
-                ui.div(
-                    ui.input_select(
-                        "recency",
-                        None,
-                        choices=["All"] + list(RECENCY_MAP.keys()),
-                        selected="All",
+                    # Charts section with scroll container
+                    ui.div(
+                        {"style": CHART_SHELL_STYLE},
+                        ui.div(
+                            {"style": CHART_SCROLL_STYLE},
+                            ui.layout_columns(
+                                ui.card(ui.output_plot("pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
+                                ui.card(ui.output_plot("pressure_max_temp_plot"), style=PLOT_CARD_STYLE),
+                                col_widths=(6, 6),
+                            ),
+                            ui.card(ui.output_plot("temp_series"), style=PLOT_CARD_STYLE),
+                            ui.card(ui.output_plot("pressure_series"), style=PLOT_CARD_STYLE),
+                        ),
                     ),
-                    style="display:flex; justify-content:center;",
-                ),
-                style=FILTER_CARD_STYLE,
+                )
             ),
-            col_widths=(3, 3, 3, 3),
         ),
-        # KPI row
-        ui.layout_columns(
-            ui.card(
-                ui.p("Avg Min Temperature", style=KPI_LABEL_STYLE),
-                ui.div(ui.output_text("avg_min"), style=KPI_VALUE_STYLE),
-                style=KPI_PILL_STYLE,
-            ),
-            ui.card(
-                ui.p("Avg Max Temperature", style=KPI_LABEL_STYLE),
-                ui.div(ui.output_text("avg_max"), style=KPI_VALUE_STYLE),
-                style=KPI_PILL_STYLE,
-            ),
-            ui.card(
-                ui.p("Avg Air Pressure", style=KPI_LABEL_STYLE),
-                ui.div(ui.output_text("avg_pressure"), style=KPI_VALUE_STYLE),
-                style=KPI_PILL_STYLE,
-            ),
-            ui.card(
-                ui.p("Pressure Variability (Std Dev)", style=KPI_LABEL_STYLE),
-                ui.div(ui.output_text("std_pressure"), style=KPI_VALUE_STYLE),
-                style=KPI_PILL_STYLE,
-            ),
-            col_widths=(3, 3, 3, 3),
-        ),
-        # Charts section with scroll container
-        ui.div(
-            {"style": CHART_SHELL_STYLE},
-            ui.div(
-                {"style": CHART_SCROLL_STYLE},
-                ui.layout_columns(
-                    ui.card(ui.output_plot("pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
-                    ui.card(ui.output_plot("pressure_max_temp_plot"), style=PLOT_CARD_STYLE),
-                    col_widths=(6, 6),
+        # AI DAshboard
+        ui.nav_panel(
+                "AI Page",
+                ui.page_fluid(
+                    ui.div(
+                        {"style": BG_STYLE},
+                        ui.div(
+                            ui.h2(
+                                "MarsCast AI",
+                                style="color:#FFFFFF; font-size:2.3em; font-weight:900; margin:0; text-shadow: 0 2px 12px rgba(0,0,0,0.9);",
+                            ),
+                            ui.p(
+                                "Solstice reporting for duty! Ask me about Martian weather :)",
+                                style="color:rgba(255,205,160,0.95); margin:4px 0 0 0;",
+                            ),
+                            style="display:flex; flex-direction:column; align-items:flex-start; max-width:1200px; margin:0 0 12px 0;",
+                        ),
+                        ui.tags.hr(style=TOP_RULE_STYLE),
+                    )
                 ),
-                ui.card(ui.output_plot("temp_series"), style=PLOT_CARD_STYLE),
-                ui.card(ui.output_plot("pressure_series"), style=PLOT_CARD_STYLE),
             ),
-        ),
-    )
+    ],
+    title=None,
+    id="main_nav",
+    inverse=True,
 )
 
 
