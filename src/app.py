@@ -10,7 +10,7 @@ import chatlas
 import os
 
 
-AI_AGENT = "claude-3-5-sonnet-20241022"
+AI_AGENT = "claude-haiku-4-5"
 SEASON_MAP = {
     "Autumn": (0, 90),
     "Winter": (90, 180),
@@ -58,6 +58,24 @@ Try one of these to get started:
 * <span class="suggestion">What were the most extreme temperature conditions in the last terrestrial year?</span>
 * <span class="suggestion">Give me the month with the lowest average atmospheric pressure?</span>
 """
+DATA_DESCRIPTION = """
+Curiosity Rover Mars weather dataset (Sol 1–1895, 2012–2018, Gale Crater).
+
+Collected by the **Rover Environmental Monitoring Station (REMS)** on Curiosity. Released by NASA’s Mars Science Laboratory and CSIC-INTA.
+
+Each row is weather data for a single sol. Key columns:
+- sol: Martian day since landing
+- terrestrial_date: Earth date
+- ls: solar longitude (Mars’ season)
+- month: Martian month
+- min_temp / max_temp: surface temperature (°C)
+- pressure: surface atmospheric pressure (Pa)
+- id: record ID
+
+Notes:
+- Some temperature and pressure data are missing.
+- Supports monitoring conditions, mission planning, and engineering limits.
+"""
 USE_COLS = [
     "terrestrial_date",
     "sol",
@@ -67,7 +85,7 @@ USE_COLS = [
     "max_temp",
     "pressure",
 ]
-
+SYSTEM_PROMPT = Path(__file__).parent / "prompts" / "system_prompt.md"
 
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
@@ -79,6 +97,8 @@ qc = querychat.QueryChat(
     df,
     "mars_weather_data",
     greeting=GREETING,
+    data_description=DATA_DESCRIPTION,
+    extra_instructions=SYSTEM_PROMPT,
     client=chatlas.ChatAnthropic(api_key=anthropic_key, model=AI_AGENT),
 )
 
@@ -286,7 +306,7 @@ app_ui = ui.page_navbar(
                             style="color:#FFFFFF; font-size:2.3em; font-weight:900; margin:0; text-shadow: 0 2px 12px rgba(0,0,0,0.9);",
                         ),
                         ui.p(
-                            "Solstice reporting for duty! Ask me about Martian weather :)",
+                            "Solstice checking in from Mars. Environmental data streams are active and ready for analysis.",
                             style="color:rgba(255,205,160,0.95); margin:4px 0 0 0;",
                         ),
                         style="display:flex; flex-direction:column; align-items:flex-start; max-width:1200px; margin:0 0 12px 0;",
@@ -300,7 +320,6 @@ app_ui = ui.page_navbar(
                             fill=True,
                         ),
                         fillable=True,
-                        title="Rover Explorer",
                     ),
                 )
             ),
