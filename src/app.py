@@ -4,11 +4,26 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from dotenv import load_dotenv
+import querychat
+import chatlas
+import os
+
+
+AI_AGENT = "claude-3-5-sonnet-20241022"
+
+load_dotenv()
+anthropic_key = os.getenv("ANTHROPIC_API_KEY")
 
 # Loading the Data
 df = pd.read_csv("data/raw/mars-weather.csv")
 df["terrestrial_date"] = pd.to_datetime(df["terrestrial_date"])
 
+qc = querychat.QueryChat(
+    df,
+    "mars_weather_data",
+    client=chatlas.ChatAnthropic(api_key=anthropic_key, model=AI_AGENT),
+)
 
 SEASON_MAP = {
     "Autumn": (0, 90),
@@ -19,10 +34,10 @@ SEASON_MAP = {
 
 RECENCY_MAP = {
     "Last Month": pd.DateOffset(months=1),
-    "Last 2 Months":   pd.DateOffset(months=2),
-    "Last 6 Months":  pd.DateOffset(months=6),
-    "Last 1 Year":  pd.DateOffset(years=1),
-    "Last 2 Years":  pd.DateOffset(years=2),
+    "Last 2 Months": pd.DateOffset(months=2),
+    "Last 6 Months": pd.DateOffset(months=6),
+    "Last 1 Year": pd.DateOffset(years=1),
+    "Last 2 Years": pd.DateOffset(years=2),
 }
 
 # Reusable inline styles
@@ -50,9 +65,7 @@ TOP_RULE_STYLE = "border:none; height:1px; background:linear-gradient(to right, 
 RESET_BUTTON_STYLE = "color:#FFAD70; font-weight:600; font-size:1em"
 FILTER_H_STYLE = "text-align:center; color:#FFAD70; font-weight:700; font-size:0.95em; margin:0 0 4px 0; text-transform:uppercase; letter-spacing:0.8px;"
 KPI_LABEL_STYLE = "color:#FFAD70; font-weight:600; font-size:0.82em; text-align:center; margin:0 0 2px 0; letter-spacing:0.6px; text-transform:uppercase;"
-KPI_VALUE_STYLE = (
-    "color:#FFE8D0; font-weight:700; font-size:1.7em; text-align:center; margin:0; text-shadow: 0 1px 6px rgba(0,0,0,0.6);"
-)
+KPI_VALUE_STYLE = "color:#FFE8D0; font-weight:700; font-size:1.7em; text-align:center; margin:0; text-shadow: 0 1px 6px rgba(0,0,0,0.6);"
 
 
 DATE_CARD_WRAP_STYLE = FILTER_CARD_STYLE + "position:relative; padding-top:6px;"
@@ -61,7 +74,7 @@ DATE_CARD_WRAP_STYLE = FILTER_CARD_STYLE + "position:relative; padding-top:6px;"
 # UI Section
 app_ui = ui.page_navbar(
     *[
-        # Dashboard 
+        # Dashboard
         ui.nav_panel(
             "Dashboard",
             ui.page_fluid(
@@ -76,9 +89,9 @@ app_ui = ui.page_navbar(
                             "reset_all",
                             "Reset",
                             class_="btn btn-sm btn-outline-secondary",
-                            style=RESET_BUTTON_STYLE
+                            style=RESET_BUTTON_STYLE,
                         ),
-                        style="display:flex; justify-content:flex-end; margin-bottom:12px;"
+                        style="display:flex; justify-content:flex-end; margin-bottom:12px;",
                     ),
                     # Filters
                     ui.layout_columns(
@@ -88,7 +101,8 @@ app_ui = ui.page_navbar(
                                 ui.input_select(
                                     "month",
                                     None,
-                                    choices=["All"] + [f"Month {n}" for n in range(1, 13)],
+                                    choices=["All"]
+                                    + [f"Month {n}" for n in range(1, 13)],
                                     selected="All",
                                 ),
                                 style="display:flex; justify-content:center;",
@@ -101,7 +115,13 @@ app_ui = ui.page_navbar(
                                 ui.input_select(
                                     "season",
                                     None,
-                                    choices=["All", "Spring", "Summer", "Autumn", "Winter"],
+                                    choices=[
+                                        "All",
+                                        "Spring",
+                                        "Summer",
+                                        "Autumn",
+                                        "Winter",
+                                    ],
                                     selected="All",
                                 ),
                                 style="display:flex; justify-content:center;",
@@ -150,12 +170,18 @@ app_ui = ui.page_navbar(
                         ),
                         ui.card(
                             ui.p("Avg Air Pressure", style=KPI_LABEL_STYLE),
-                            ui.div(ui.output_text("avg_pressure"), style=KPI_VALUE_STYLE),
+                            ui.div(
+                                ui.output_text("avg_pressure"), style=KPI_VALUE_STYLE
+                            ),
                             style=KPI_PILL_STYLE,
                         ),
                         ui.card(
-                            ui.p("Pressure Variability (Std Dev)", style=KPI_LABEL_STYLE),
-                            ui.div(ui.output_text("std_pressure"), style=KPI_VALUE_STYLE),
+                            ui.p(
+                                "Pressure Variability (Std Dev)", style=KPI_LABEL_STYLE
+                            ),
+                            ui.div(
+                                ui.output_text("std_pressure"), style=KPI_VALUE_STYLE
+                            ),
                             style=KPI_PILL_STYLE,
                         ),
                         col_widths=(3, 3, 3, 3),
@@ -166,12 +192,22 @@ app_ui = ui.page_navbar(
                         ui.div(
                             {"style": CHART_SCROLL_STYLE},
                             ui.layout_columns(
-                                ui.card(ui.output_plot("pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
-                                ui.card(ui.output_plot("pressure_max_temp_plot"), style=PLOT_CARD_STYLE),
+                                ui.card(
+                                    ui.output_plot("pressure_min_temp_plot"),
+                                    style=PLOT_CARD_STYLE,
+                                ),
+                                ui.card(
+                                    ui.output_plot("pressure_max_temp_plot"),
+                                    style=PLOT_CARD_STYLE,
+                                ),
                                 col_widths=(6, 6),
                             ),
-                            ui.card(ui.output_plot("temp_series"), style=PLOT_CARD_STYLE),
-                            ui.card(ui.output_plot("pressure_series"), style=PLOT_CARD_STYLE),
+                            ui.card(
+                                ui.output_plot("temp_series"), style=PLOT_CARD_STYLE
+                            ),
+                            ui.card(
+                                ui.output_plot("pressure_series"), style=PLOT_CARD_STYLE
+                            ),
                         ),
                     ),
                 )
@@ -179,25 +215,35 @@ app_ui = ui.page_navbar(
         ),
         # AI DAshboard
         ui.nav_panel(
-                "AI Page",
-                ui.page_fluid(
+            "AI Page",
+            ui.page_fluid(
+                ui.div(
+                    {"style": BG_STYLE},
                     ui.div(
-                        {"style": BG_STYLE},
-                        ui.div(
-                            ui.h2(
-                                "MarsCast AI",
-                                style="color:#FFFFFF; font-size:2.3em; font-weight:900; margin:0; text-shadow: 0 2px 12px rgba(0,0,0,0.9);",
-                            ),
-                            ui.p(
-                                "Solstice reporting for duty! Ask me about Martian weather :)",
-                                style="color:rgba(255,205,160,0.95); margin:4px 0 0 0;",
-                            ),
-                            style="display:flex; flex-direction:column; align-items:flex-start; max-width:1200px; margin:0 0 12px 0;",
+                        ui.h2(
+                            "MarsCast AI",
+                            style="color:#FFFFFF; font-size:2.3em; font-weight:900; margin:0; text-shadow: 0 2px 12px rgba(0,0,0,0.9);",
                         ),
-                        ui.tags.hr(style=TOP_RULE_STYLE),
-                    )
-                ),
+                        ui.p(
+                            "Solstice reporting for duty! Ask me about Martian weather :)",
+                            style="color:rgba(255,205,160,0.95); margin:4px 0 0 0;",
+                        ),
+                        style="display:flex; flex-direction:column; align-items:flex-start; max-width:1200px; margin:0 0 12px 0;",
+                    ),
+                    ui.tags.hr(style=TOP_RULE_STYLE),
+                    # app_ui = ui.page_sidebar(
+                    #     qc.sidebar(),
+                    #     ui.card(
+                    #         ui.card_header(ui.output_text("title")),
+                    #         ui.output_data_frame("data_table"),
+                    #         fill=True,
+                    #     ),
+                    #     fillable=True,
+                    #     title="Rover Explorer",
+                    # ),
+                )
             ),
+        ),
     ],
     title=None,
     id="main_nav",
@@ -230,21 +276,21 @@ def server(input, output, session):
             cutoff = filtered["terrestrial_date"].max() - RECENCY_MAP[input.recency()]
             filtered = filtered[filtered["terrestrial_date"] >= cutoff]
 
-
         return filtered
 
     @reactive.calc
     def filtered_df():
         return apply_filters()
-    
+
     @reactive.calc
     def series_filtered():
         filtered = filtered_df()
-        return    (
+        return (
             filtered.set_index("terrestrial_date")[["max_temp", "min_temp", "pressure"]]
-            .resample("1D").mean().reset_index()
-            )
-
+            .resample("1D")
+            .mean()
+            .reset_index()
+        )
 
     # --- Cascading filter updates ---
 
@@ -252,7 +298,9 @@ def server(input, output, session):
     def _update_month_choices():
         ctx = apply_filters(exclude="month")
         present = set(ctx["month"].unique())
-        valid = ["All"] + [f"Month {n}" for n in range(1, 13) if f"Month {n}" in present]
+        valid = ["All"] + [
+            f"Month {n}" for n in range(1, 13) if f"Month {n}" in present
+        ]
         selected = input.month() if input.month() in valid else "All"
         ui.update_select("month", choices=valid, selected=selected)
 
@@ -260,7 +308,8 @@ def server(input, output, session):
     def _update_season_choices():
         ctx = apply_filters(exclude="season")
         valid = ["All"] + [
-            name for name, (lo, hi) in SEASON_MAP.items()
+            name
+            for name, (lo, hi) in SEASON_MAP.items()
             if ((ctx["ls"] >= lo) & (ctx["ls"] < hi)).any()
         ]
         selected = input.season() if input.season() in valid else "All"
@@ -274,22 +323,24 @@ def server(input, output, session):
         else:
             max_date = ctx["terrestrial_date"].max()
             valid = ["All"] + [
-                name for name, offset in RECENCY_MAP.items()
+                name
+                for name, offset in RECENCY_MAP.items()
                 if (ctx["terrestrial_date"] >= max_date - offset).any()
             ]
         selected = input.recency() if input.recency() in valid else "All"
         ui.update_select("recency", choices=valid, selected=selected)
-    
+
     @reactive.effect
     @reactive.event(input.reset_all)
     def _reset_filters():
         ui.update_select("month", selected="All")
         ui.update_select("season", selected="All")
         ui.update_select("recency", selected="All")
-        ui.update_date_range("date_range",
-                             start=df["terrestrial_date"].min(),
-                             end=df["terrestrial_date"].max()
-                            )
+        ui.update_date_range(
+            "date_range",
+            start=df["terrestrial_date"].min(),
+            end=df["terrestrial_date"].max(),
+        )
 
     # KPI Outputs
     @output
@@ -321,21 +372,30 @@ def server(input, output, session):
     def temp_series():
         filtered = series_filtered()
         plt.figure(figsize=(10, 6))
-        plt.plot(filtered["terrestrial_date"], filtered["min_temp"], label='Minimum Temperature', color='#FFAD70')
-        plt.plot(filtered["terrestrial_date"], filtered["max_temp"], label='Maximum temperature', color='#C1440E')
+        plt.plot(
+            filtered["terrestrial_date"],
+            filtered["min_temp"],
+            label="Minimum Temperature",
+            color="#FFAD70",
+        )
+        plt.plot(
+            filtered["terrestrial_date"],
+            filtered["max_temp"],
+            label="Maximum temperature",
+            color="#C1440E",
+        )
         plt.ylabel("Temperature (C)")
         plt.xlabel("Terrestrial date")
         plt.title("Daily average temperatures")
         plt.xticks(rotation=90)
         plt.plot(legend=False)
 
-
     @output
     @render.plot
     def pressure_series():
         filtered = series_filtered()
         plt.figure(figsize=(10, 6))
-        plt.plot(filtered["terrestrial_date"], filtered["pressure"], color = '#FFAD70')
+        plt.plot(filtered["terrestrial_date"], filtered["pressure"], color="#FFAD70")
         plt.ylabel("Air Pressure (Pa)")
         plt.xlabel("Terrestrial date")
         plt.title("Daily average air pressure")
@@ -347,19 +407,19 @@ def server(input, output, session):
     def pressure_min_temp_plot():
         filtered = filtered_df()
         plt.figure()
-        sns.scatterplot(x = "pressure", y="min_temp", data=filtered, color = '#FFAD70')
+        sns.scatterplot(x="pressure", y="min_temp", data=filtered, color="#FFAD70")
         plt.ylabel("Temperature (C)")
         plt.xlabel("Air Pressure (Pa)")
         plt.title("Air Pressure and Minimum Temperature")
         plt.xticks(rotation=90)
         plt.plot(legend=False)
-    
+
     @output
     @render.plot
     def pressure_max_temp_plot():
         filtered = filtered_df()
         plt.figure()
-        sns.scatterplot(x = "pressure", y="max_temp", data=filtered, color = '#C1440E')
+        sns.scatterplot(x="pressure", y="max_temp", data=filtered, color="#C1440E")
         plt.ylabel("Temperature (C)")
         plt.xlabel("Air Pressure (Pa)")
         plt.title("Air Pressure and Maximum Temperature")
