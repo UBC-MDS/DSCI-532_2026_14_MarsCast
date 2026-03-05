@@ -11,27 +11,12 @@ import os
 
 
 AI_AGENT = "claude-3-5-sonnet-20241022"
-
-load_dotenv()
-anthropic_key = os.getenv("ANTHROPIC_API_KEY")
-
-# Loading the Data
-df = pd.read_csv("data/raw/mars-weather.csv")
-df["terrestrial_date"] = pd.to_datetime(df["terrestrial_date"])
-
-qc = querychat.QueryChat(
-    df,
-    "mars_weather_data",
-    client=chatlas.ChatAnthropic(api_key=anthropic_key, model=AI_AGENT),
-)
-
 SEASON_MAP = {
     "Autumn": (0, 90),
     "Winter": (90, 180),
     "Spring": (180, 270),
     "Summer": (270, 360),
 }
-
 RECENCY_MAP = {
     "Last Month": pd.DateOffset(months=1),
     "Last 2 Months": pd.DateOffset(months=2),
@@ -39,7 +24,6 @@ RECENCY_MAP = {
     "Last 1 Year": pd.DateOffset(years=1),
     "Last 2 Years": pd.DateOffset(years=2),
 }
-
 # Reusable inline styles
 # Produced with the Help of Generative AI
 CARD_STYLE = "background-color:rgba(20,6,6,0.82); box-shadow: 2px 2px 8px #000000; border-radius:26px; padding:18px;"
@@ -48,7 +32,6 @@ KPI_PILL_STYLE = "background-color:rgba(10,2,2,0.85); box-shadow: 0px 8px 24px r
 PLOT_CARD_STYLE = "background-color:rgba(14,4,4,0.82); box-shadow: 0px 8px 24px rgba(0,0,0,0.55); border-radius:18px; padding:8px; border:1px solid rgba(210,85,30,0.4); backdrop-filter:blur(6px);"
 CHART_SHELL_STYLE = "margin-top:18px; background-color:rgba(10,2,2,0.60); box-shadow: 0px 10px 22px rgba(0,0,0,0.4); border-radius:28px; padding:18px; border:1px solid rgba(210,85,30,0.35); backdrop-filter:blur(4px);"
 CHART_SCROLL_STYLE = "max-height:560px; overflow-y:auto; padding-right:8px;"
-
 BG_STYLE = """
 min-height:100vh;
 padding:24px 24px 40px 24px;
@@ -57,22 +40,100 @@ background-size:cover;
 background-position:center;
 background-attachment:fixed;
 """
-
 TITLE_STYLE = "text-align:center; color:#FFFFFF; font-size:3.6em; font-weight:900; margin:6px 0 0 0; letter-spacing:1px; text-shadow: 0 2px 12px rgba(0,0,0,0.9), 0 0 40px rgba(220,80,20,0.7);"
 SUBTITLE_STYLE = "text-align:center; color:rgba(255,205,160,0.95); font-weight:400; font-size:1.3em; margin:0 0 16px 0; text-shadow: 0 1px 8px rgba(0,0,0,0.8); letter-spacing:0.3px;"
 TOP_RULE_STYLE = "border:none; height:1px; background:linear-gradient(to right, transparent, rgba(210,85,30,0.7), transparent); border-radius:999px; margin:10px auto 18px auto; max-width:1200px;"
-
 RESET_BUTTON_STYLE = "color:#FFAD70; font-weight:600; font-size:1em"
 FILTER_H_STYLE = "text-align:center; color:#FFAD70; font-weight:700; font-size:0.95em; margin:0 0 4px 0; text-transform:uppercase; letter-spacing:0.8px;"
 KPI_LABEL_STYLE = "color:#FFAD70; font-weight:600; font-size:0.82em; text-align:center; margin:0 0 2px 0; letter-spacing:0.6px; text-transform:uppercase;"
 KPI_VALUE_STYLE = "color:#FFE8D0; font-weight:700; font-size:1.7em; text-align:center; margin:0; text-shadow: 0 1px 6px rgba(0,0,0,0.6);"
-
-
 DATE_CARD_WRAP_STYLE = FILTER_CARD_STYLE + "position:relative; padding-top:6px;"
+GREETING = """
+☄️ Greetings from Gale Crater! Solstice Rover here, reporting the latest surface weather observations.
 
+Try one of these to get started:
+
+* <span class="suggestion">Summarize atmospheric pressure statistics for the last 6 terrestrial months.</span>
+* <span class="suggestion">Compute average, min, and max temperature for the last 6 terrestrial months.</span>
+* <span class="suggestion">What were the most extreme temperature conditions in the last terrestrial year?</span>
+* <span class="suggestion">Give me the month with the lowest average atmospheric pressure?</span>
+"""
+USE_COLS = [
+    "terrestrial_date",
+    "sol",
+    "ls",
+    "month",
+    "min_temp",
+    "max_temp",
+    "pressure",
+]
+
+
+load_dotenv()
+anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+# Loading the Data
+df = pd.read_csv("data/raw/mars-weather.csv", usecols=USE_COLS)
+df["terrestrial_date"] = pd.to_datetime(df["terrestrial_date"])
+
+qc = querychat.QueryChat(
+    df,
+    "mars_weather_data",
+    greeting=GREETING,
+    client=chatlas.ChatAnthropic(api_key=anthropic_key, model=AI_AGENT),
+)
 
 # UI Section
 app_ui = ui.page_navbar(
+    ui.head_content(
+        ui.tags.style(
+            """
+            .bslib-sidebar-layout > .sidebar {
+                background-color: rgba(12, 3, 3, 0.88) !important;
+                border-right: 1px solid rgba(210, 85, 30, 0.5) !important;
+                backdrop-filter: blur(8px);
+            }
+            .bslib-sidebar-layout > .sidebar .sidebar-title {
+                color: #FFAD70 !important;
+                font-weight: 700;
+                border-bottom: 1px solid rgba(210, 85, 30, 0.35);
+                padding-bottom: 8px;
+            }
+            .bslib-sidebar-layout > .main {
+                background-color: rgba(8, 2, 2, 0.75) !important;
+                backdrop-filter: blur(6px);
+            }
+            .querychat shiny-chat-message {
+                color: #FFE8D0 !important;
+            }
+            .querychat shiny-chat-user-message {
+                background-color: rgba(180, 60, 10, 0.75) !important;
+                color: #FFE8D0 !important;
+                border-radius: 14px !important;
+                border: 1px solid rgba(210, 85, 30, 0.5) !important;
+            }
+            .querychat .suggestion, .querychat a.suggestion {
+                color: #FFAD70 !important;
+                font-weight: 600;
+            }
+            .querychat shiny-chat-input textarea,
+            .querychat shiny-chat-input input {
+                background-color: rgba(20, 5, 3, 0.90) !important;
+                color: #FFE8D0 !important;
+                border: 1px solid rgba(210, 85, 30, 0.6) !important;
+                border-radius: 12px !important;
+            }
+            .querychat shiny-chat-input textarea::placeholder,
+            .querychat shiny-chat-input input::placeholder {
+                color: rgba(255, 180, 120, 0.5) !important;
+            }
+            .querychat shiny-chat-input button {
+                background-color: rgba(180, 60, 10, 0.8) !important;
+                color: #FFE8D0 !important;
+                border-radius: 10px !important;
+            }
+        """
+        )
+    ),
     *[
         # Dashboard
         ui.nav_panel(
@@ -231,16 +292,16 @@ app_ui = ui.page_navbar(
                         style="display:flex; flex-direction:column; align-items:flex-start; max-width:1200px; margin:0 0 12px 0;",
                     ),
                     ui.tags.hr(style=TOP_RULE_STYLE),
-                    # app_ui = ui.page_sidebar(
-                    #     qc.sidebar(),
-                    #     ui.card(
-                    #         ui.card_header(ui.output_text("title")),
-                    #         ui.output_data_frame("data_table"),
-                    #         fill=True,
-                    #     ),
-                    #     fillable=True,
-                    #     title="Rover Explorer",
-                    # ),
+                    ui.page_sidebar(
+                        qc.sidebar(),
+                        ui.card(
+                            ui.card_header(ui.output_text("title")),
+                            ui.output_data_frame("data_table"),
+                            fill=True,
+                        ),
+                        fillable=True,
+                        title="Rover Explorer",
+                    ),
                 )
             ),
         ),
@@ -253,6 +314,15 @@ app_ui = ui.page_navbar(
 
 # Server
 def server(input, output, session):
+    qc_vals = qc.server()
+
+    @render.data_frame
+    def data_table():
+        return qc_vals.df()
+
+    @render.text
+    def title():
+        return qc_vals.title() or "Mars Weather Data"
 
     def apply_filters(exclude=None):
         """Apply all active filters except the one named in `exclude`."""
