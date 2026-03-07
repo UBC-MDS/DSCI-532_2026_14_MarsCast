@@ -335,10 +335,12 @@ app_ui = ui.page_navbar(
 def server(input, output, session):
     qc_vals = qc.server()
 
+    @output
     @render.data_frame
     def data_table():
-        return qc_vals.df()
-
+        return render.DataGrid(qc_vals.df(), height="420px")
+    
+    @output
     @render.text
     def title():
         return qc_vals.title() or "Mars Weather Data"
