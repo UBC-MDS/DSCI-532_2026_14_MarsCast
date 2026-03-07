@@ -320,11 +320,8 @@ app_ui = ui.page_navbar(
                                 ui.output_data_frame("data_table"),
                                 fill=True,
                             ),
-                            ui.layout_columns(
-                                ui.card(ui.output_plot("ai_pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
-                                ui.card(ui.output_plot("ai_temp_series_plot"), style=PLOT_CARD_STYLE),
-                                col_widths=(6, 6),
-                            ),
+                            ui.card(ui.output_plot("ai_pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
+                            ui.card(ui.output_plot("ai_temp_series_plot"), style=PLOT_CARD_STYLE),
                             style="display:flex; flex-direction:column; gap:14px;",
                         ),
                         fillable=True,
