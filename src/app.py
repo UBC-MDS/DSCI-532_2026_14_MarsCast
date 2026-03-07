@@ -143,6 +143,14 @@ def kpi_caption(cmp):
     """Return the badge text under the KPI number."""
     return ui.HTML(f'<strong style="opacity:0.9">{cmp["badge"]}</strong>')
 
+qc = querychat.QueryChat(
+    df,
+    "mars_weather_data",
+    greeting=GREETING,
+    data_description=DATA_DESCRIPTION,
+    extra_instructions=SYSTEM_PROMPT,
+    client=chatlas.ChatAnthropic(api_key=anthropic_key, model=AI_AGENT),
+)
 
 # UI Section
 app_ui = ui.page_navbar(
@@ -356,10 +364,15 @@ app_ui = ui.page_navbar(
                     ui.tags.hr(style=TOP_RULE_STYLE),
                     ui.page_sidebar(
                         qc.sidebar(),
-                        ui.card(
-                            ui.card_header(ui.output_text("title")),
-                            ui.output_data_frame("data_table"),
-                            fill=True,
+                        ui.div(
+                            ui.card(
+                                ui.card_header(ui.output_text("title")),
+                                ui.output_data_frame("data_table"),
+                                fill=True,
+                            ),
+                            ui.card(ui.output_plot("ai_pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
+                            ui.card(ui.output_plot("ai_temp_series_plot"), style=PLOT_CARD_STYLE),
+                            style="display:flex; flex-direction:column; gap:14px;",
                         ),
                         fillable=True,
                     ),
@@ -377,10 +390,63 @@ app_ui = ui.page_navbar(
 def server(input, output, session):
     qc_vals = qc.server()
 
+    @output
     @render.data_frame
     def data_table():
-        return qc_vals.df()
+        return render.DataGrid(qc_vals.df(), height="420px")
+    
+    # AI Page Vizualizations
+    @output
+    @render.plot
+    def ai_pressure_min_temp_plot():
+        d = qc_vals.df()
+        if d is None or d.empty:
+            plt.figure()
+            plt.title("Air Pressure vs Minimum Temperature (AI Filtered)")
+            plt.text(0.5, 0.5, "No data for current AI filter", ha="center", va="center")
+            plt.axis("off")
+            return
 
+        plt.figure()
+        sns.scatterplot(x="pressure", y="min_temp", data=d, color="#FFAD70")
+        plt.ylabel("Min Temperature (C)")
+        plt.xlabel("Air Pressure (Pa)")
+        plt.title("Air Pressure vs Minimum Temperature (AI Filtered)")
+        plt.xticks(rotation=0)
+
+
+    @output
+    @render.plot
+    def ai_temp_series_plot():
+        d = qc_vals.df()
+        if d is None or d.empty:
+            plt.figure()
+            plt.title("Daily Average Temperatures (AI Filtered)")
+            plt.text(0.5, 0.5, "No data for current AI filter", ha="center", va="center")
+            plt.axis("off")
+            return
+
+
+        dd = d.copy()
+        dd["terrestrial_date"] = pd.to_datetime(dd["terrestrial_date"])
+        dd = (
+            dd.set_index("terrestrial_date")[["min_temp", "max_temp"]]
+            .resample("1D")
+            .mean()
+            .reset_index()
+        )
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(dd["terrestrial_date"], dd["min_temp"], label="Minimum Temperature", color="#FFAD70")
+        plt.plot(dd["terrestrial_date"], dd["max_temp"], label="Maximum Temperature", color="#C1440E")
+        plt.ylabel("Temperature (C)")
+        plt.xlabel("Terrestrial date")
+        plt.title("Daily Average Temperatures (AI Filtered)")
+        plt.xticks(rotation=90)
+        plt.legend()
+
+    
+    @output
     @render.text
     def title():
         return qc_vals.title() or "Mars Weather Data"
