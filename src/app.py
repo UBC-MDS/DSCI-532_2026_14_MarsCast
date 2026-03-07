@@ -348,7 +348,7 @@ def server(input, output, session):
     def data_table():
         return render.DataGrid(qc_vals.df(), height="420px")
     
-
+    # AI Page Vizualizations
     @output
     @render.plot
     def ai_pressure_min_temp_plot():
@@ -360,12 +360,43 @@ def server(input, output, session):
             plt.axis("off")
             return
 
-    plt.figure()
-    sns.scatterplot(x="pressure", y="min_temp", data=d, color="#FFAD70")
-    plt.ylabel("Min Temperature (C)")
-    plt.xlabel("Air Pressure (Pa)")
-    plt.title("Air Pressure vs Minimum Temperature (AI Filtered)")
-    plt.xticks(rotation=0)
+        plt.figure()
+        sns.scatterplot(x="pressure", y="min_temp", data=d, color="#FFAD70")
+        plt.ylabel("Min Temperature (C)")
+        plt.xlabel("Air Pressure (Pa)")
+        plt.title("Air Pressure vs Minimum Temperature (AI Filtered)")
+        plt.xticks(rotation=0)
+
+
+    @output
+    @render.plot
+    def ai_temp_series_plot():
+        d = qc_vals.df()
+        if d is None or d.empty:
+            plt.figure()
+            plt.title("Daily Average Temperatures (AI Filtered)")
+            plt.text(0.5, 0.5, "No data for current AI filter", ha="center", va="center")
+            plt.axis("off")
+            return
+
+
+        dd = d.copy()
+        dd["terrestrial_date"] = pd.to_datetime(dd["terrestrial_date"])
+        dd = (
+            dd.set_index("terrestrial_date")[["min_temp", "max_temp"]]
+            .resample("1D")
+            .mean()
+            .reset_index()
+        )
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(dd["terrestrial_date"], dd["min_temp"], label="Minimum Temperature", color="#FFAD70")
+        plt.plot(dd["terrestrial_date"], dd["max_temp"], label="Maximum Temperature", color="#C1440E")
+        plt.ylabel("Temperature (C)")
+        plt.xlabel("Terrestrial date")
+        plt.title("Daily Average Temperatures (AI Filtered)")
+        plt.xticks(rotation=90)
+        plt.legend()
 
     
     @output
