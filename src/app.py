@@ -344,7 +344,7 @@ app_ui = ui.page_navbar(
                 )
             ),
         ),
-        # AI DAshboard
+        # AI Dashboard
         ui.nav_panel(
             "AI Page",
             ui.page_fluid(
@@ -365,6 +365,7 @@ app_ui = ui.page_navbar(
                     ui.page_sidebar(
                         qc.sidebar(),
                         ui.div(
+                            ui.download_button("download_view", "Download CSV", style=KPI_PILL_STYLE),
                             ui.card(
                                 ui.card_header(ui.output_text("title")),
                                 ui.output_data_frame("data_table"),
@@ -390,10 +391,16 @@ app_ui = ui.page_navbar(
 def server(input, output, session):
     qc_vals = qc.server()
 
+
     @output
     @render.data_frame
     def data_table():
         return render.DataGrid(qc_vals.df(), height="420px")
+    
+    @output
+    @render.download(filename="mars__ai_filtered.csv")
+    def download_view():
+        yield qc_vals.df().data_view().to_csv(index=False)
     
     # AI Page Vizualizations
     @output
