@@ -314,10 +314,18 @@ app_ui = ui.page_navbar(
                     ui.tags.hr(style=TOP_RULE_STYLE),
                     ui.page_sidebar(
                         qc.sidebar(),
-                        ui.card(
-                            ui.card_header(ui.output_text("title")),
-                            ui.output_data_frame("data_table"),
-                            fill=True,
+                        ui.div(
+                            ui.card(
+                                ui.card_header(ui.output_text("title")),
+                                ui.output_data_frame("data_table"),
+                                fill=True,
+                            ),
+                            ui.layout_columns(
+                                ui.card(ui.output_plot("ai_pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
+                                ui.card(ui.output_plot("ai_temp_series_plot"), style=PLOT_CARD_STYLE),
+                                col_widths=(6, 6),
+                            ),
+                            style="display:flex; flex-direction:column; gap:14px;",
                         ),
                         fillable=True,
                     ),
@@ -339,6 +347,26 @@ def server(input, output, session):
     @render.data_frame
     def data_table():
         return render.DataGrid(qc_vals.df(), height="420px")
+    
+
+    @output
+    @render.plot
+    def ai_pressure_min_temp_plot():
+        d = qc_vals.df()
+        if d is None or d.empty:
+            plt.figure()
+            plt.title("Air Pressure vs Minimum Temperature (AI Filtered)")
+            plt.text(0.5, 0.5, "No data for current AI filter", ha="center", va="center")
+            plt.axis("off")
+            return
+
+    plt.figure()
+    sns.scatterplot(x="pressure", y="min_temp", data=d, color="#FFAD70")
+    plt.ylabel("Min Temperature (C)")
+    plt.xlabel("Air Pressure (Pa)")
+    plt.title("Air Pressure vs Minimum Temperature (AI Filtered)")
+    plt.xticks(rotation=0)
+
     
     @output
     @render.text
