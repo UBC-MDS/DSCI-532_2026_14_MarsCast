@@ -23,7 +23,7 @@
 
 ### Reflection
 
-Most importantly, at this stage, our dashboard does a very good job of addressing each of the Job Stories that we defined during Milestone 1. In particular, including the comparison visualizations betwen Air Pressure and Temperature on both the first page and the AI page are useful for addressing Job Story #3. Furthermore, the time series plots are useful to address Job Story #4. The updated KPIs with comparisons are helpful for Job Stories #1 and #2.
+Most importantly, at this stage, our dashboard does a very good job of addressing each of the Job Stories that we defined during Milestone 1. In particular, including the comparison visualizations betwen Air Pressure and Temperature on both the first page and the AI page are useful for addressing Job Story #3. Furthermore, the time series plots are useful to address Job Story #4. The updated KPIs with comparisons are helpful for Job Stories #1 and #2. Alongside this, we were careful to maintain consistent style choices across the dashboard and visualizations as laid out in the visualization best practices that we learned in DSCI 531.
 
 While the addition of the Chat Bot feature does not directly address any of our Job Stories it will be useful for users who are less familiar with the particular schema of our dataset. Furthermore, the data download option will allow the user to explore the underlying data further, should they have questions not currently being addressed by the dashboard. If this were a real-world product, we would want to set up a way to record and gather feedback from users to see what they are querying often or seeking to uncover in the exported data. That way we could update and upgrade they dashboard to better address user needs.
 
