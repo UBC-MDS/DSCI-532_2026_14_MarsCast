@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from faicons import icon_svg
 
 # Loading the Data
 df = pd.read_csv("data/raw/mars-weather.csv")
@@ -24,6 +25,49 @@ RECENCY_MAP = {
     "Last 1 Year":  pd.DateOffset(years=1),
     "Last 2 Years":  pd.DateOffset(years=2),
 }
+
+# Default: the most recent month(Feb, Terrestrial Calendar)
+latest_date = df["terrestrial_date"].max()
+latest_martian_month = df.loc[df["terrestrial_date"] == latest_date, "month"].iloc[0]
+latest_ls = df.loc[df["terrestrial_date"] == latest_date, "ls"].iloc[0]
+latest_season = next(
+    (name for name, (lo, hi) in SEASON_MAP.items() if lo <= latest_ls < hi), 
+    "All"
+)
+
+# Adapted from DSCI 523 lecture 6 slides
+def compare(current, baseline):
+    """
+    Compare current vs baseline, return icon and bagde text
+    """
+    # guard: can't compute a meaningful average
+    if baseline is None or baseline == 0 or pd.isna(current) or pd.isna(baseline):
+        return dict(icon="circle-minus", badge="no data")
+
+    # percentage change relative to baseline
+    pct = (current - baseline) / abs(baseline) * 100
+
+    # badge sign and text
+    sign = "+" if pct >= 0 else ""
+    diff = current - baseline
+    badge = f"{sign}{diff:.1f} ({sign}{pct:.1f}%) vs last year"
+   
+    # direction icon
+    if diff > 0:
+        icon = "arrow-trend-up"
+    elif diff < 0:
+        icon = "arrow-trend-down"
+    else:
+        icon = "minus"
+    #icon = "arrow-trend-up" if pct > 0 else "arrow-trend-down"
+
+    return dict(icon=icon, badge=badge)
+
+
+def kpi_caption(cmp):
+    """Return the badge text under the KPI number."""
+    return ui.HTML(f'<strong style="opacity:0.9">{cmp["badge"]}</strong>')
+
 
 # Reusable inline styles
 # Produced with the Help of Generative AI
@@ -49,11 +93,14 @@ TOP_RULE_STYLE = "border:none; height:1px; background:linear-gradient(to right, 
 
 RESET_BUTTON_STYLE = "color:#FFAD70; font-weight:600; font-size:1em"
 FILTER_H_STYLE = "text-align:center; color:#FFAD70; font-weight:700; font-size:0.95em; margin:0 0 4px 0; text-transform:uppercase; letter-spacing:0.8px;"
-KPI_LABEL_STYLE = "color:#FFAD70; font-weight:600; font-size:0.82em; text-align:center; margin:0 0 2px 0; letter-spacing:0.6px; text-transform:uppercase;"
+KPI_LABEL_STYLE = "color:#FFAD70; font-weight:600; font-size:0.95em; text-align:center; margin:0 0 2px 0; letter-spacing:0.6px; text-transform:uppercase;"
 KPI_VALUE_STYLE = (
     "color:#FFE8D0; font-weight:700; font-size:1.7em; text-align:center; margin:0; text-shadow: 0 1px 6px rgba(0,0,0,0.6);"
 )
-
+KPI_CARD_STYLE = "background: transparent !important; border: none !important; box-shadow: none !important; color: inherit !important; padding: 0 !important;"
+KPI_CAPTION_STYLE = (
+    "color:rgba(255,205,160,0.8); font-size:0.7em; font-weight:300; margin-top:2px; letter-spacing:0.3px; text-align:center;"
+)
 
 DATE_CARD_WRAP_STYLE = FILTER_CARD_STYLE + "position:relative; padding-top:6px;"
 
@@ -84,7 +131,7 @@ app_ui = ui.page_fluid(
                         "month",
                         None,
                         choices=["All"] + [f"Month {n}" for n in range(1, 13)],
-                        selected="All",
+                        selected=latest_martian_month,
                     ),
                     style="display:flex; justify-content:center;",
                 ),
@@ -97,7 +144,7 @@ app_ui = ui.page_fluid(
                         "season",
                         None,
                         choices=["All", "Spring", "Summer", "Autumn", "Winter"],
-                        selected="All",
+                        selected=latest_season,
                     ),
                     style="display:flex; justify-content:center;",
                 ),
@@ -109,8 +156,8 @@ app_ui = ui.page_fluid(
                     ui.input_date_range(
                         "date_range",
                         None,
-                        start=df["terrestrial_date"].min(),
-                        end=df["terrestrial_date"].max(),
+                        start=latest_date.replace(day=1).date(),
+                        end=latest_date.date(),
                     ),
                     style="display:flex; justify-content:center;",
                 ),
@@ -135,17 +182,17 @@ app_ui = ui.page_fluid(
         ui.layout_columns(
             ui.card(
                 ui.p("Avg Min Temperature", style=KPI_LABEL_STYLE),
-                ui.div(ui.output_text("avg_min"), style=KPI_VALUE_STYLE),
+                ui.div(ui.output_ui("avg_min"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE,
             ),
             ui.card(
                 ui.p("Avg Max Temperature", style=KPI_LABEL_STYLE),
-                ui.div(ui.output_text("avg_max"), style=KPI_VALUE_STYLE),
+                ui.div(ui.output_ui("avg_max"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE,
             ),
             ui.card(
                 ui.p("Avg Air Pressure", style=KPI_LABEL_STYLE),
-                ui.div(ui.output_text("avg_pressure"), style=KPI_VALUE_STYLE),
+                ui.div(ui.output_ui("avg_pressure"), style=KPI_VALUE_STYLE),
                 style=KPI_PILL_STYLE,
             ),
             ui.card(
@@ -212,7 +259,17 @@ def server(input, output, session):
             filtered.set_index("terrestrial_date")[["max_temp", "min_temp", "pressure"]]
             .resample("1D").mean().reset_index()
             )
+    
+    @reactive.calc
+    def filtered_baseline_df():
+        current = filtered_df()
+        if current.empty:
+            return None
+        
+        target_dates = (current["terrestrial_date"] - pd.DateOffset(years=1)).dt.date
+        baseline = df[df["terrestrial_date"].dt.date.isin(target_dates)]
 
+        return baseline
 
     # --- Cascading filter updates ---
 
@@ -261,22 +318,98 @@ def server(input, output, session):
 
     # KPI Outputs
     @output
-    @render.text
+    @render.ui
     def avg_min():
-        filtered = filtered_df()
-        return f"{filtered['min_temp'].mean():.2f} °C" if not filtered.empty else "N/A"
+        curr = filtered_df()
+        base = filtered_baseline_df() 
+    
+        if curr.empty:
+            return ui.div("N/A", style="opacity: 0.6;")
+    
+        curr_avg = curr["min_temp"].mean()
+    
+        if base is None or base.empty:
+            return ui.TagList(
+                ui.div(f"{curr_avg:.2f} °C"),
+                ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;")
+            )
+
+        base_avg = base["min_temp"].mean()
+        cmp = compare(curr_avg, base_avg)
+    
+        return ui.TagList(
+            ui.div(
+                ui.span(
+                    icon_svg(cmp["icon"], height="0.7em"), 
+                    style=f"margin-right: 8px"
+                ),
+                ui.span(f"{curr_avg:.2f} °C")
+            ),
+            ui.div(kpi_caption(cmp), style=KPI_CAPTION_STYLE)
+        )
+
 
     @output
-    @render.text
+    @render.ui
     def avg_max():
-        filtered = filtered_df()
-        return f"{filtered['max_temp'].mean():.2f} °C" if not filtered.empty else "N/A"
+        curr = filtered_df()
+        base = filtered_baseline_df() 
+    
+        if curr.empty:
+            return ui.div("N/A", style="opacity: 0.6;")
+    
+        curr_avg = curr["max_temp"].mean()
+    
+        if base is None or base.empty:
+            return ui.TagList(
+                ui.div(f"{curr_avg:.2f} °C"),
+                ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;")
+            )
+
+        base_avg = base["max_temp"].mean()
+        cmp = compare(curr_avg, base_avg)
+    
+        return ui.TagList(
+            ui.div(
+                ui.span(
+                    icon_svg(cmp["icon"], height="0.7em"), 
+                    style=f"margin-right: 8px"
+                ),
+                ui.span(f"{curr_avg:.2f} °C")
+            ),
+            ui.div(kpi_caption(cmp), style=KPI_CAPTION_STYLE)
+        )
 
     @output
-    @render.text
+    @render.ui
     def avg_pressure():
-        filtered = filtered_df()
-        return f"{filtered['pressure'].mean():.2f} Pa" if not filtered.empty else "N/A"
+        curr = filtered_df()
+        base = filtered_baseline_df() 
+    
+        if curr.empty:
+            return ui.div("N/A", style="opacity: 0.6;")
+    
+        curr_avg = curr["pressure"].mean()
+    
+        if base is None or base.empty:
+            return ui.TagList(
+                ui.div(f"{curr_avg:.2f} °C"),
+                ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;")
+            )
+
+        base_avg = base["pressure"].mean()
+        cmp = compare(curr_avg, base_avg)
+    
+        return ui.TagList(
+            ui.div(
+                ui.span(
+                    icon_svg(cmp["icon"], height="0.7em"), 
+                    style=f"margin-right: 8px"
+                ),
+                ui.span(f"{curr_avg:.2f} Pa")
+            ),
+            ui.div(kpi_caption(cmp), style=KPI_CAPTION_STYLE)
+        )
 
     @output
     @render.text
