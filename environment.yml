@@ -15,3 +15,8 @@ dependencies:
   - pip
   - matplotlib
   - seaborn
+  - python-dotenv
+  - anthropic
+  - querychat
+  - chatlas
+  - faicons
