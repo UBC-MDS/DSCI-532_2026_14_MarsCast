@@ -50,6 +50,7 @@ KPI_LABEL_STYLE = "color:#FFAD70; font-weight:600; font-size:0.82em; text-align:
 KPI_VALUE_STYLE = "color:#FFE8D0; font-weight:700; font-size:1.7em; text-align:center; margin:0; text-shadow: 0 1px 6px rgba(0,0,0,0.6);"
 KPI_CAPTION_STYLE = "color:rgba(255,205,160,0.8); font-size:0.7em; font-weight:300; margin-top:2px; letter-spacing:0.3px; text-align:center;"
 DATE_CARD_WRAP_STYLE = FILTER_CARD_STYLE + "position:relative; padding-top:6px;"
+DOWNLOAD_BUTTON_STYLE = KPI_PILL_STYLE + "color:#FFAD70; font-weight:600; font-size:0.9em; border:1px solid rgba(210,85,30,0.5);"
 GREETING = """
 ☄️ Greetings from Gale Crater! Solstice Rover here, reporting the latest surface weather observations.
 
@@ -344,7 +345,7 @@ app_ui = ui.page_navbar(
                 )
             ),
         ),
-        # AI DAshboard
+        # AI Dashboard
         ui.nav_panel(
             "AI Page",
             ui.page_fluid(
@@ -365,6 +366,7 @@ app_ui = ui.page_navbar(
                     ui.page_sidebar(
                         qc.sidebar(),
                         ui.div(
+                            ui.download_button("download_view", "Download CSV", style=DOWNLOAD_BUTTON_STYLE),
                             ui.card(
                                 ui.card_header(ui.output_text("title")),
                                 ui.output_data_frame("data_table"),
@@ -394,6 +396,11 @@ def server(input, output, session):
     @render.data_frame
     def data_table():
         return render.DataGrid(qc_vals.df(), height="420px")
+    
+    @output
+    @render.download(filename="mars__ai_filtered.csv")
+    def download_view():
+        yield qc_vals.df().to_csv(index=False)
     
     # AI Page Vizualizations
     @output
