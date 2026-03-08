@@ -391,7 +391,6 @@ app_ui = ui.page_navbar(
 def server(input, output, session):
     qc_vals = qc.server()
 
-
     @output
     @render.data_frame
     def data_table():
@@ -400,7 +399,7 @@ def server(input, output, session):
     @output
     @render.download(filename="mars__ai_filtered.csv")
     def download_view():
-        yield qc_vals.df().data_view().to_csv(index=False)
+        yield qc_vals.df().to_csv(index=False)
     
     # AI Page Vizualizations
     @output
