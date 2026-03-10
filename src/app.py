@@ -1,5 +1,6 @@
 from shiny import App, ui, render, reactive
 from pathlib import Path
+import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,8 +8,13 @@ import seaborn as sns
 from dotenv import load_dotenv
 import querychat
 import chatlas
+import shinychat
+import narwhals.stable.v1 as nw
 import os
 from faicons import icon_svg
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "rag"))
+from retriever import retrieve_context
 
 
 AI_AGENT = "claude-haiku-4-5"
@@ -50,7 +56,10 @@ KPI_LABEL_STYLE = "color:#FFAD70; font-weight:600; font-size:0.82em; text-align:
 KPI_VALUE_STYLE = "color:#FFE8D0; font-weight:700; font-size:1.7em; text-align:center; margin:0; text-shadow: 0 1px 6px rgba(0,0,0,0.6);"
 KPI_CAPTION_STYLE = "color:rgba(255,205,160,0.8); font-size:0.7em; font-weight:300; margin-top:2px; letter-spacing:0.3px; text-align:center;"
 DATE_CARD_WRAP_STYLE = FILTER_CARD_STYLE + "position:relative; padding-top:6px;"
-DOWNLOAD_BUTTON_STYLE = KPI_PILL_STYLE + "color:#FFAD70; font-weight:600; font-size:0.9em; border:1px solid rgba(210,85,30,0.5);"
+DOWNLOAD_BUTTON_STYLE = (
+    KPI_PILL_STYLE
+    + "color:#FFAD70; font-weight:600; font-size:0.9em; border:1px solid rgba(210,85,30,0.5);"
+)
 GREETING = """
 ☄️ Greetings from Gale Crater! Solstice Rover here, reporting the latest surface weather observations.
 
@@ -109,7 +118,10 @@ qc = querychat.QueryChat(
 latest_date = df["terrestrial_date"].max()
 latest_martian_month = df.loc[df["terrestrial_date"] == latest_date, "month"].iloc[0]
 latest_ls = df.loc[df["terrestrial_date"] == latest_date, "ls"].iloc[0]
-latest_season = next((name for name, (lo, hi) in SEASON_MAP.items() if lo <= latest_ls < hi), "All")
+latest_season = next(
+    (name for name, (lo, hi) in SEASON_MAP.items() if lo <= latest_ls < hi), "All"
+)
+
 
 # Adapted from DSCI 523 lecture 6 slides
 def compare(current, baseline):
@@ -127,7 +139,7 @@ def compare(current, baseline):
     sign = "+" if pct >= 0 else ""
     diff = current - baseline
     badge = f"{sign}{diff:.1f} ({sign}{pct:.1f}%) vs last year"
-   
+
     # direction icon
     if diff > 0:
         icon = "arrow-trend-up"
@@ -135,7 +147,7 @@ def compare(current, baseline):
         icon = "arrow-trend-down"
     else:
         icon = "minus"
-    #icon = "arrow-trend-up" if pct > 0 else "arrow-trend-down"
+    # icon = "arrow-trend-up" if pct > 0 else "arrow-trend-down"
 
     return dict(icon=icon, badge=badge)
 
@@ -144,14 +156,6 @@ def kpi_caption(cmp):
     """Return the badge text under the KPI number."""
     return ui.HTML(f'<strong style="opacity:0.9">{cmp["badge"]}</strong>')
 
-qc = querychat.QueryChat(
-    df,
-    "mars_weather_data",
-    greeting=GREETING,
-    data_description=DATA_DESCRIPTION,
-    extra_instructions=SYSTEM_PROMPT,
-    client=chatlas.ChatAnthropic(api_key=anthropic_key, model=AI_AGENT),
-)
 
 # UI Section
 app_ui = ui.page_navbar(
@@ -302,9 +306,7 @@ app_ui = ui.page_navbar(
                         ),
                         ui.card(
                             ui.p("Avg Air Pressure", style=KPI_LABEL_STYLE),
-                            ui.div(
-                                ui.output_ui("avg_pressure"), style=KPI_VALUE_STYLE
-                            ),
+                            ui.div(ui.output_ui("avg_pressure"), style=KPI_VALUE_STYLE),
                             style=KPI_PILL_STYLE,
                         ),
                         ui.card(
@@ -364,16 +366,32 @@ app_ui = ui.page_navbar(
                     ),
                     ui.tags.hr(style=TOP_RULE_STYLE),
                     ui.page_sidebar(
-                        qc.sidebar(),
+                        ui.sidebar(
+                            ui.div({"class": "querychat"}, shinychat.chat_ui("mars_chat")),
+                            width=400,
+                            height="100%",
+                            fillable=True,
+                            class_="querychat-sidebar",
+                        ),
                         ui.div(
-                            ui.download_button("download_view", "Download CSV", style=DOWNLOAD_BUTTON_STYLE),
+                            ui.download_button(
+                                "download_view",
+                                "Download CSV",
+                                style=DOWNLOAD_BUTTON_STYLE,
+                            ),
                             ui.card(
                                 ui.card_header(ui.output_text("title")),
                                 ui.output_data_frame("data_table"),
                                 fill=True,
                             ),
-                            ui.card(ui.output_plot("ai_pressure_min_temp_plot"), style=PLOT_CARD_STYLE),
-                            ui.card(ui.output_plot("ai_temp_series_plot"), style=PLOT_CARD_STYLE),
+                            ui.card(
+                                ui.output_plot("ai_pressure_min_temp_plot"),
+                                style=PLOT_CARD_STYLE,
+                            ),
+                            ui.card(
+                                ui.output_plot("ai_temp_series_plot"),
+                                style=PLOT_CARD_STYLE,
+                            ),
                             style="display:flex; flex-direction:column; gap:14px;",
                         ),
                         fillable=True,
@@ -390,27 +408,63 @@ app_ui = ui.page_navbar(
 
 # Server
 def server(input, output, session):
-    qc_vals = qc.server()
+    sql_val = reactive.Value(None)
+    title_val = reactive.Value(None)
+
+    def update_dashboard(data):
+        sql_val.set(data["query"])
+        title_val.set(data["title"])
+
+    def reset_dashboard():
+        sql_val.set(None)
+        title_val.set(None)
+
+    chat = qc.client(update_dashboard=update_dashboard, reset_dashboard=reset_dashboard)
+    mars_chat = shinychat.Chat("mars_chat")
+
+    @mars_chat.on_user_submit
+    async def _(user_input: str):
+        context = retrieve_context(user_input)
+        augmented = (
+            f"## Retrieved Context\n{context}\n\n## User Question\n{user_input}"
+            if context
+            else user_input
+        )
+        stream = await chat.stream_async(augmented, echo="none", content="all")
+        await mars_chat.append_message_stream(stream)
+
+    @reactive.effect
+    async def _greet():
+        await mars_chat.append_message(GREETING)
+
+    @reactive.calc
+    def ai_filtered_df():
+        q = sql_val()
+        if not q:
+            return df
+        return nw.to_native(qc.data_source.execute_query(q))
 
     @output
     @render.data_frame
     def data_table():
-        return render.DataGrid(qc_vals.df(), height="420px")
-    
+        return render.DataGrid(ai_filtered_df(), height="420px")
+
     @output
     @render.download(filename="mars__ai_filtered.csv")
     def download_view():
-        yield qc_vals.df().to_csv(index=False)
-    
+        yield ai_filtered_df().to_csv(index=False)
+
     # AI Page Vizualizations
     @output
     @render.plot
     def ai_pressure_min_temp_plot():
-        d = qc_vals.df()
+        d = ai_filtered_df()
         if d is None or d.empty:
             plt.figure()
             plt.title("Air Pressure vs Minimum Temperature (AI Filtered)")
-            plt.text(0.5, 0.5, "No data for current AI filter", ha="center", va="center")
+            plt.text(
+                0.5, 0.5, "No data for current AI filter", ha="center", va="center"
+            )
             plt.axis("off")
             return
 
@@ -421,18 +475,18 @@ def server(input, output, session):
         plt.title("Air Pressure vs Minimum Temperature (AI Filtered)")
         plt.xticks(rotation=0)
 
-
     @output
     @render.plot
     def ai_temp_series_plot():
-        d = qc_vals.df()
+        d = ai_filtered_df()
         if d is None or d.empty:
             plt.figure()
             plt.title("Daily Average Temperatures (AI Filtered)")
-            plt.text(0.5, 0.5, "No data for current AI filter", ha="center", va="center")
+            plt.text(
+                0.5, 0.5, "No data for current AI filter", ha="center", va="center"
+            )
             plt.axis("off")
             return
-
 
         dd = d.copy()
         dd["terrestrial_date"] = pd.to_datetime(dd["terrestrial_date"])
@@ -444,19 +498,28 @@ def server(input, output, session):
         )
 
         plt.figure(figsize=(10, 6))
-        plt.plot(dd["terrestrial_date"], dd["min_temp"], label="Minimum Temperature", color="#FFAD70")
-        plt.plot(dd["terrestrial_date"], dd["max_temp"], label="Maximum Temperature", color="#C1440E")
+        plt.plot(
+            dd["terrestrial_date"],
+            dd["min_temp"],
+            label="Minimum Temperature",
+            color="#FFAD70",
+        )
+        plt.plot(
+            dd["terrestrial_date"],
+            dd["max_temp"],
+            label="Maximum Temperature",
+            color="#C1440E",
+        )
         plt.ylabel("Temperature (C)")
         plt.xlabel("Terrestrial date")
         plt.title("Daily Average Temperatures (AI Filtered)")
         plt.xticks(rotation=90)
         plt.legend()
 
-    
     @output
     @render.text
     def title():
-        return qc_vals.title() or "Mars Weather Data"
+        return title_val() or "Mars Weather Data"
 
     def apply_filters(exclude=None):
         """Apply all active filters except the one named in `exclude`."""
@@ -501,12 +564,12 @@ def server(input, output, session):
         current = filtered_df()
         if current.empty:
             return None
-        
+
         target_dates = (current["terrestrial_date"] - pd.DateOffset(years=1)).dt.date
         baseline = df[df["terrestrial_date"].dt.date.isin(target_dates)]
 
         return baseline
-    
+
     # --- Cascading filter updates ---
 
     @reactive.effect
@@ -562,96 +625,91 @@ def server(input, output, session):
     @render.ui
     def avg_min():
         curr = filtered_df()
-        base = filtered_baseline_df() 
-    
+        base = filtered_baseline_df()
+
         if curr.empty:
             return ui.div("N/A", style="opacity: 0.6;")
-    
+
         curr_avg = curr["min_temp"].mean()
-    
+
         if base is None or base.empty:
             return ui.TagList(
                 ui.div(f"{curr_avg:.2f} °C"),
-                ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;")
+                ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;"),
             )
 
         base_avg = base["min_temp"].mean()
         cmp = compare(curr_avg, base_avg)
-    
+
         return ui.TagList(
             ui.div(
                 ui.span(
-                    icon_svg(cmp["icon"], height="0.7em"), 
-                    style=f"margin-right: 8px"
+                    icon_svg(cmp["icon"], height="0.7em"), style=f"margin-right: 8px"
                 ),
-                ui.span(f"{curr_avg:.2f} °C")
+                ui.span(f"{curr_avg:.2f} °C"),
             ),
-            ui.div(kpi_caption(cmp), style=KPI_CAPTION_STYLE)
+            ui.div(kpi_caption(cmp), style=KPI_CAPTION_STYLE),
         )
-
 
     @output
     @render.ui
     def avg_max():
         curr = filtered_df()
-        base = filtered_baseline_df() 
-    
+        base = filtered_baseline_df()
+
         if curr.empty:
             return ui.div("N/A", style="opacity: 0.6;")
-    
+
         curr_avg = curr["max_temp"].mean()
-    
+
         if base is None or base.empty:
             return ui.TagList(
                 ui.div(f"{curr_avg:.2f} °C"),
-                ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;")
+                ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;"),
             )
 
         base_avg = base["max_temp"].mean()
         cmp = compare(curr_avg, base_avg)
-    
+
         return ui.TagList(
             ui.div(
                 ui.span(
-                    icon_svg(cmp["icon"], height="0.7em"), 
-                    style=f"margin-right: 8px"
+                    icon_svg(cmp["icon"], height="0.7em"), style=f"margin-right: 8px"
                 ),
-                ui.span(f"{curr_avg:.2f} °C")
+                ui.span(f"{curr_avg:.2f} °C"),
             ),
-            ui.div(kpi_caption(cmp), style=KPI_CAPTION_STYLE)
+            ui.div(kpi_caption(cmp), style=KPI_CAPTION_STYLE),
         )
 
     @output
     @render.ui
     def avg_pressure():
         curr = filtered_df()
-        base = filtered_baseline_df() 
-    
+        base = filtered_baseline_df()
+
         if curr.empty:
             return ui.div("N/A", style="opacity: 0.6;")
-    
+
         curr_avg = curr["pressure"].mean()
-    
+
         if base is None or base.empty:
             return ui.TagList(
                 ui.div(f"{curr_avg:.2f} °C"),
-                ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;")
+                ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;"),
             )
 
         base_avg = base["pressure"].mean()
         cmp = compare(curr_avg, base_avg)
-    
+
         return ui.TagList(
             ui.div(
                 ui.span(
-                    icon_svg(cmp["icon"], height="0.7em"), 
-                    style=f"margin-right: 8px"
+                    icon_svg(cmp["icon"], height="0.7em"), style=f"margin-right: 8px"
                 ),
-                ui.span(f"{curr_avg:.2f} Pa")
+                ui.span(f"{curr_avg:.2f} Pa"),
             ),
-            ui.div(kpi_caption(cmp), style=KPI_CAPTION_STYLE)
+            ui.div(kpi_caption(cmp), style=KPI_CAPTION_STYLE),
         )
-
 
     @output
     @render.text
