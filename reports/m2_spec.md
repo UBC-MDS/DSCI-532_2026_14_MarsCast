@@ -109,3 +109,7 @@ Main Data Filter
 ### Complexity Enhancement
 
 A reset button is added to the dashboard. It restores all filters to their default values, allowing users to quickly start over and avoid manually undoing changes. This makes the dashboard more user-friendly and efficient.
+
+### Performance Updates
+
+In Milestone 4, release v0.4.0, we switched from loading the data from a csv directly to lazy loading using DuckDB and ibis.
