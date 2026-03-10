@@ -477,8 +477,7 @@ def server(input, output, session):
             filtered = filtered.filter((_.terrestrial_date >= start)& (_.terrestrial_date <= end))
 
         if exclude != "recency" and input.recency() != "All":
-            cutoff = filtered.terrestrial_date.max() - RECENCY_MAP[input.recency()]
-            filtered = filtered.filter(_.terrestrial_date >= cutoff)
+            cutoff = df.terrestrial_date.max().execute() - RECENCY_MAP[input.recency()]
             filtered = filtered.filter(_.terrestrial_date >= cutoff)
 
         return filtered.execute()
