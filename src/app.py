@@ -9,6 +9,8 @@ import querychat
 import chatlas
 import os
 from faicons import icon_svg
+import ibis
+from ibis import _
 
 
 AI_AGENT = "claude-haiku-4-5"
@@ -92,9 +94,10 @@ SYSTEM_PROMPT = Path(__file__).parent / "prompts" / "system_prompt.md"
 
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+
 # Loading the Data
-df = pd.read_csv("data/raw/mars-weather.csv", usecols=USE_COLS)
-df["terrestrial_date"] = pd.to_datetime(df["terrestrial_date"])
+con = ibis.duckdb.connect()
+df = con.read_parquet("data/processed/mars-weather.parquet")
 
 qc = querychat.QueryChat(
     df,
@@ -106,9 +109,9 @@ qc = querychat.QueryChat(
 )
 
 # Default: the most recent month(Feb, Terrestrial Calendar)
-latest_date = df["terrestrial_date"].max()
-latest_martian_month = df.loc[df["terrestrial_date"] == latest_date, "month"].iloc[0]
-latest_ls = df.loc[df["terrestrial_date"] == latest_date, "ls"].iloc[0]
+latest_date = df.terrestrial_date.max().execute()
+latest_martian_month = df.filter(_.terrestrial_date == latest_date).select(_.month).limit(1).execute().iloc[0,0]
+latest_ls = df.filter(_.terrestrial_date == latest_date).select(_.ls).limit(1).execute().iloc[0,0]
 latest_season = next((name for name, (lo, hi) in SEASON_MAP.items() if lo <= latest_ls < hi), "All")
 
 # Adapted from DSCI 523 lecture 6 slides
@@ -145,7 +148,7 @@ def kpi_caption(cmp):
     return ui.HTML(f'<strong style="opacity:0.9">{cmp["badge"]}</strong>')
 
 qc = querychat.QueryChat(
-    df,
+    df.execute(),
     "mars_weather_data",
     greeting=GREETING,
     data_description=DATA_DESCRIPTION,
@@ -266,8 +269,8 @@ app_ui = ui.page_navbar(
                                 ui.input_date_range(
                                     "date_range",
                                     None,
-                                    start=latest_date.replace(day=1).date(),
-                                    end=latest_date.date(),
+                                    start=latest_date.replace(day=1),
+                                    end=latest_date,
                                 ),
                                 style="display:flex; justify-content:center;",
                             ),
@@ -398,7 +401,7 @@ def server(input, output, session):
         return render.DataGrid(qc_vals.df(), height="420px")
     
     @output
-    @render.download(filename="mars__ai_filtered.csv")
+    @render.download(filename="mars_ai_filtered.csv")
     def download_view():
         yield qc_vals.df().to_csv(index=False)
     
@@ -460,27 +463,25 @@ def server(input, output, session):
 
     def apply_filters(exclude=None):
         """Apply all active filters except the one named in `exclude`."""
-        filtered = df.copy()
+        filtered = df
 
         if exclude != "month" and input.month() != "All":
-            filtered = filtered[filtered["month"] == input.month()]
+            filtered = filtered.filter(_.month == input.month())
 
         if exclude != "season" and input.season() != "All":
             lo, hi = SEASON_MAP[input.season()]
-            filtered = filtered[(filtered["ls"] >= lo) & (filtered["ls"] < hi)]
+            filtered = filtered.filter((_.ls >= lo) & (_.ls < hi))
 
         if exclude != "date_range":
             start, end = sorted(input.date_range())
-            filtered = filtered[
-                (filtered["terrestrial_date"] >= pd.to_datetime(start))
-                & (filtered["terrestrial_date"] <= pd.to_datetime(end))
-            ]
+            filtered = filtered.filter((_.terrestrial_date >= start)& (_.terrestrial_date <= end))
 
         if exclude != "recency" and input.recency() != "All":
-            cutoff = filtered["terrestrial_date"].max() - RECENCY_MAP[input.recency()]
-            filtered = filtered[filtered["terrestrial_date"] >= cutoff]
+            cutoff = filtered.terrestrial_date.max() - RECENCY_MAP[input.recency()]
+            filtered = filtered.filter(_.terrestrial_date >= cutoff)
+            filtered = filtered.filter(_.terrestrial_date >= cutoff)
 
-        return filtered
+        return filtered.execute()
 
     @reactive.calc
     def filtered_df():
@@ -503,9 +504,9 @@ def server(input, output, session):
             return None
         
         target_dates = (current["terrestrial_date"] - pd.DateOffset(years=1)).dt.date
-        baseline = df[df["terrestrial_date"].dt.date.isin(target_dates)]
+        baseline = df.filter(_.terrestrial_date.isin(target_dates))
 
-        return baseline
+        return baseline.execute()
     
     # --- Cascading filter updates ---
 
@@ -553,8 +554,8 @@ def server(input, output, session):
         ui.update_select("recency", selected="All")
         ui.update_date_range(
             "date_range",
-            start=df["terrestrial_date"].min(),
-            end=df["terrestrial_date"].max(),
+            start=df.terrestrial_date.min().execute(),
+            end=df.terrestrial_date.max().execute(),
         )
 
     # KPI Outputs
@@ -634,7 +635,7 @@ def server(input, output, session):
     
         if base is None or base.empty:
             return ui.TagList(
-                ui.div(f"{curr_avg:.2f} °C"),
+                ui.div(f"{curr_avg:.2f} Pa"),
                 ui.div("No baseline data", style="font-size: 0.7em; opacity: 0.5;")
             )
 
