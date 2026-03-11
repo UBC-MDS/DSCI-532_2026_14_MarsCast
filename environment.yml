@@ -3,20 +3,25 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12
-  - numpy
-  - pandas
-  - plotly
   - altair
-  - shiny
-  - jupyterlab
-  - ipykernel
-  - scipy
-  - pytest
-  - pip
-  - matplotlib
-  - seaborn
-  - python-dotenv
   - anthropic
-  - querychat
   - chatlas
   - faicons
+  - ipykernel
+  - jupyterlab
+  - langchain
+  - langchain-community
+  - langchain-text-splitters
+  - matplotlib
+  - narwhals
+  - numpy
+  - pandas
+  - pip
+  - plotly
+  - pytest
+  - python-dotenv
+  - querychat
+  - scipy
+  - seaborn
+  - shiny
+  - shinychat
