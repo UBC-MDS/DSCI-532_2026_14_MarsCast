@@ -1,5 +1,9 @@
-import numpy as np
-from src.logic import compare
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
+
+from logic import compare
 
 def test_compare_no_data_when_baseline_missing():
     """Verifies compare returns a safe 'no data' badge when baseline is missing, preventing misleading KPI deltas."""
