@@ -60,34 +60,6 @@ DOWNLOAD_BUTTON_STYLE = (
     KPI_PILL_STYLE
     + "color:#FFAD70; font-weight:600; font-size:0.9em; border:1px solid rgba(210,85,30,0.5);"
 )
-GREETING = """
-☄️ Greetings from Gale Crater! Solstice Rover here, reporting the latest surface weather observations.
-
-Try one of these to get started:
-
-* <span class="suggestion">Summarize atmospheric pressure statistics for the last 6 terrestrial months.</span>
-* <span class="suggestion">Compute average, min, and max temperature for the last 6 terrestrial months.</span>
-* <span class="suggestion">What were the most extreme temperature conditions in the last terrestrial year?</span>
-* <span class="suggestion">Give me the month with the lowest average atmospheric pressure?</span>
-"""
-DATA_DESCRIPTION = """
-Curiosity Rover Mars weather dataset (Sol 1–1895, 2012–2018, Gale Crater).
-
-Collected by the **Rover Environmental Monitoring Station (REMS)** on Curiosity. Released by NASA’s Mars Science Laboratory and CSIC-INTA.
-
-Each row is weather data for a single sol. Key columns:
-- sol: Martian day since landing
-- terrestrial_date: Earth date
-- ls: solar longitude (Mars’ season)
-- month: Martian month
-- min_temp / max_temp: surface temperature (°C)
-- pressure: surface atmospheric pressure (Pa)
-- id: record ID
-
-Notes:
-- Some temperature and pressure data are missing.
-- Supports monitoring conditions, mission planning, and engineering limits.
-"""
 USE_COLS = [
     "terrestrial_date",
     "sol",
@@ -98,6 +70,8 @@ USE_COLS = [
     "pressure",
 ]
 SYSTEM_PROMPT = Path(__file__).parent / "prompts" / "system_prompt.md"
+DATA_DESCRIPTION = Path(__file__).parent / "prompts" / "initial_data_description.md"
+GREETING = (Path(__file__).parent / "prompts" / "greeting_prompt.txt").read_text()
 
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
@@ -367,7 +341,9 @@ app_ui = ui.page_navbar(
                     ui.tags.hr(style=TOP_RULE_STYLE),
                     ui.page_sidebar(
                         ui.sidebar(
-                            ui.div({"class": "querychat"}, shinychat.chat_ui("mars_chat")),
+                            ui.div(
+                                {"class": "querychat"}, shinychat.chat_ui("mars_chat")
+                            ),
                             width=400,
                             height="100%",
                             fillable=True,
