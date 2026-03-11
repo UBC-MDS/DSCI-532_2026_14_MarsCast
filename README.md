@@ -189,6 +189,12 @@ Run all tests from the repository root with:
 pytest -q
 ```
 
+If Playwright browsers are not installed yet, run:
+
+```bash
+playwright install
+```
+
 The tests cover:
 
 - KPI comparison logic through unit tests

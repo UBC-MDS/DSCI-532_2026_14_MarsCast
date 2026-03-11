@@ -86,3 +86,5 @@ watchfiles==1.1.1
 wcwidth==0.6.0
 websockets==16.0
 zipp==3.23.0
+playwright==1.58.0
+pytest==9.0.2
