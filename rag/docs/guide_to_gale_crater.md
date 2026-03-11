@@ -1,0 +1,31 @@
+# A Guide to Gale Crater
+
+The Curiosity rover has taught us a lot about the history of Mars and its potential to support life. Take a tour of its landing site, Gale Crater.
+
+In 2012, NASA’s Curiosity Rover went to Mars to explore Gale Crater, a large impact basin with a massive, layered mountain in the middle. How did this strange landscape come to be? And what can its history teach us about the potential for life on Mars? After several years of exploration, here’s what we think could have happened.
+
+Around 3.7 billion years ago, a large meteor impact blasts out the initial crater, cracking the rock below and leaving a central peak as the surface rebounds. It’s a wetter time in Mars’ history. Groundwater seeps into the new crater, while rivers fed by rain or melting snow also flow in, forming a large lake – and carrying in gravel, sand and silt.
+
+This material keeps building up over millions of years. And as each layer cements into rock, it records a snapshot of the environment that shaped it. In time, the gradual drying of Mars shuts off the rivers. But sediment keeps piling up as sand and dust blow into the crater, deeply burying the deposits laid down in water.
+
+Meanwhile, groundwater remains deep below the dusty surface. At some point, winds that once carried sediment in begin scouring it back out. In areas closer to the crater rim, these winds dig all the way down into the ancient lake deposits. And as the heavy weight above is lifted, these layers crack, which helps groundwater flow through and alter them again before they dry out.
+
+By about 3 billion years ago, we’re left with the basic form we see today. It’s in this version of Gale Crater that Curiosity has helped piece together the story: Sediment patterns show a lot of water was present, continually, over many millions of years – both as persistent groundwater, and a long-standing lake (with occasional dry spells).
+
+Mineral and chemical readings show that water from both the lake and subsurface was friendly for potential microbes. Drill samples from the lakebed show key elements, organic molecules, nutrients and energy sources that microbes could have used. Water flowing through underground fractures could have supported life even in deeply buried rocks. And the composition of some layers makes them good for preserving potential signs of past life.
+
+Taken together, the evidence points to Gale Crater (and Mars in general) as a place where life — if it ever arose — might have survived for some time.
+
+With our primary mission fulfilled, we continue exploring: uncovering the history of Mars, and learning more about how and where future missions can search for the signatures that ancient life may have left behind.
+
+On August 6, 2022, the Curiosity rover reached a major milestone on Mars: 10 years of exploring Gale crater. Although getting on in years by rover standards (the Opportunity rover set the record of more than 14 years), Curiosity shows no signs of slowing down, and the discoveries related to the past potential habitability of Mars keep on coming.
+
+On August 6, 2012, Curiosity became the first rover to be landed by being lowered to the surface via a Skycrane system. The rover landed between the north side of Mt. Sharp and the northern wall of the crater on a deposit of rocks and sand, called an alluvial fan, that were washed down the northern wall of the crater billions of years ago. From there, Curiosity literally took off for the hills. One of the first stops was a series of outcrops in an area near the landing site called Yellowknife Bay. There, Curiosity drilled into the rocks using its seven-foot arm and examined the resultant sample using its science payload of 10 instruments. The results were stunning and showed that an ancient lake had once filled the floor of the crater.
+
+Subsequent exploration, drilling, and analyses during the 28.6 km+ (nearly 18 miles) traverse the rover has made up the northern flank of Mt Sharp are no less spectacular, as seen below. The individually thin lake beds total more than 300 m (close to 1,000 feet) in thickness, are clay-bearing, some contain organic materials, and point to a water chemistry that was likely habitable. Most agree that these rocks, known as the Murray Formation (named after Bruce Murray, a planetary geologist that made significant contributions to early Mars missions), record a long period of wetter, more clement, potentially habitable conditions on early Mars.
+
+More recently, Curiosity has climbed higher and into the transition between the clay-bearing rocks and overlying sulfate-bearing rocks noted from orbit. Changes observed in the landscape and analyzed samples relate to a decrease in the decreasing amounts of clay with increasing elevation and the onset of rock units and forms (including mud cracks that form when wet mud dries and contracts, seen below) likely emplaced in a river setting rather than in a lake. In other words, the long-lived lake in Gale crater was drying out and being filled in as the environment transitioned to one where there was water only some of the time (rather than all of the time) in a large, deep lake.
+
+Curiosity is currently just at the top of the transition between the clay-bearing and sulfate-bearing rocks and is documenting additional changes in the rock textures and composition that point to a time when the climate experienced further drying and became much more like it is today. Nevertheless, there is good evidence that the climate did not remain exclusively dry and that there was some late water activity that resulted in deposition of some features (e.g., small fans and possible deltas within the crater) and perhaps sourced a groundwater system that further modified the chemistry and cementation of the rocks.
+
+The story of the Curiosity mission is still being written as the rover continues to explore, sample, and document the rocks ever higher on Mt. Sharp. Ultimately, the goal is to understand how the sediment, chemistry, and distribution of the various rocks not only record the drying of Gale crater and Mars over time, but also decipher clues as to the cause of why the Mars of today is so cold and dry relative to wetter, more habitable times in the past.

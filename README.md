@@ -74,7 +74,8 @@ These tools were chosen to balance **scientific rigor**, **interactivity**, and 
 - **Time window control** using terrestrial date range filtering for targeted trend inspection  
 - **KPI summary cards** for the filtered subset: average min temperature, average max temperature, average pressure, and pressure standard deviation  
 - **Relationship plots** to explore how air pressure relates to daily temperatures (pressure vs min temp; pressure vs max temp)  
-- **Time series plots** showing temperature and pressure trends over sols, updating live with filter changes  
+- **Time series plots** showing temperature and pressure trends over sols, updating live with filter changes
+- **AI assistant page** with an LLM-powered chatbot for queries and insights, enhanced with Retrieval-Augmented Generation (RAG) for improved contextual accuracy  
 
 ---
 

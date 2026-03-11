@@ -113,3 +113,13 @@ A reset button is added to the dashboard. It restores all filters to their defau
 ### Performance Updates
 
 In Milestone 4, release v0.4.0, we switched from loading the data from a csv directly to lazy loading using DuckDB and ibis.
+
+**RAG-Augmented AI Page**  
+
+To improve the quality and contextual accuracy of the AI assistant, a Retrieval-Augmented Generation (RAG) pipeline was implemented:
+
+- Added domain-specific reference documents under `rag/docs/` to serve as the knowledge base for context enrichment.
+- Created `rag/ingestion.py` to load, split documents into chunks, and persist them as a pickle file under `vector_store/`.
+- Created `rag/retriever.py` to perform BM25 keyword search over the stored chunks and return the most relevant context for a given user query.
+- Wired the RAG pipeline into `src/app.py` using a custom `shinychat` integration, replacing the default `querychat` handling to allow context injection before each LLM call.
+- Extracted LLM prompts into dedicated files under `src/prompts/` and updated the greeting message.
