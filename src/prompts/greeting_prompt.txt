@@ -1,0 +1,8 @@
+☄️ Greetings from Gale Crater! Solstice Rover here, reporting the latest surface weather observations.
+
+Ready for your first query. Some suggestions from my data logs:
+
+* <span class="suggestion">Summarize atmospheric pressure statistics for the last 6 terrestrial months.</span>
+* <span class="suggestion">Compute average, min, and max temperature for the last 6 terrestrial months.</span>
+* <span class="suggestion">What were the most extreme temperature conditions in the last terrestrial year?</span>
+* <span class="suggestion">Give me the month with the lowest average atmospheric pressure?</span>

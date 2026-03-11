@@ -3,22 +3,31 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12
+  - altair
+  - anthropic
+  - chatlas
+  - faicons
+  - ipykernel
+  - jupyterlab
+  - langchain
+  - langchain-community
+  - langchain-text-splitters
+  - matplotlib
+  - narwhals
   - numpy
   - pandas
-  - plotly
-  - altair
-  - shiny
-  - jupyterlab
-  - ipykernel
-  - scipy
-  - pytest
   - pip
-  - matplotlib
-  - seaborn
+  - plotly
+  - pytest
   - python-dotenv
-  - anthropic
   - querychat
   - chatlas
   - faicons
+  - ibis-framework
+  - duckdb
+  - scipy
+  - seaborn
+  - shiny
+  - shinychat
   - pip:
       - playwright
