@@ -21,6 +21,10 @@ dependencies:
   - pytest
   - python-dotenv
   - querychat
+  - chatlas
+  - faicons
+  - ibis-framework
+  - duckdb
   - scipy
   - seaborn
   - shiny
