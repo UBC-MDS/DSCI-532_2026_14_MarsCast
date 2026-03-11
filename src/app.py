@@ -9,6 +9,7 @@ import querychat
 import chatlas
 import os
 from faicons import icon_svg
+from logic import compare
 
 
 AI_AGENT = "claude-haiku-4-5"
