@@ -407,7 +407,7 @@ def server(input, output, session):
     mars_chat = shinychat.Chat("mars_chat")
 
     @mars_chat.on_user_submit
-    async def _(user_input: str):
+    async def _handle_chat_submit(user_input: str):
         context = retrieve_context(user_input)
         augmented = (
             f"## Retrieved Context\n{context}\n\n## User Question\n{user_input}"
@@ -425,7 +425,7 @@ def server(input, output, session):
     def ai_filtered_df():
         q = sql_val()
         if not q:
-            return df
+            return df.execute()
         return nw.to_native(qc.data_source.execute_query(q))
 
     @output
