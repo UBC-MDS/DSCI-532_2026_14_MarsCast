@@ -29,3 +29,5 @@ dependencies:
   - seaborn
   - shiny
   - shinychat
+  - pip:
+      - playwright

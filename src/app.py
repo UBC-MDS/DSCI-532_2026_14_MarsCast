@@ -12,6 +12,7 @@ import shinychat
 import narwhals.stable.v1 as nw
 import os
 from faicons import icon_svg
+from logic import compare
 import ibis
 from ibis import _
 
