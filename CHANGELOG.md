@@ -19,7 +19,7 @@
 
 - Ensured plot titles are consistent between pages (Issue [#83](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/83), [#90](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/90)) via (PR [#94](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/94))
 
-- Fixed AI page UI to show chat portion at all times (Issue [#69](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/69)) via (PR ?)
+- Fixed AI page UI to show chat portion at all times (Issue [#69](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/69)) via (PR [#84](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/84))
 
 - **Feedback prioritization issue link:** [#75](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/75)
 
@@ -35,8 +35,8 @@ Previously, our chatbot used an LLM that only had access to the dataset schema (
 
 - **Option chosen:** C 
 - **PR:** [#84](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/84)
-- **Why this option over the others:** <!-- 1–2 sentences; link to your feature prioritization issue -->
-- **Feature prioritization issue link:**: ?
+- **Why this option over the others:** Interpreting Mars data is challenging for Earth-based users, and RAG enables QueryChat to provide accurate, domain-specific guidance to support them.
+- **Feature prioritization issue link:**: [#99](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/99)
 
 ### Collaboration
 
