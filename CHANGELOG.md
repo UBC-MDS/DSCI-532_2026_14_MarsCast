@@ -1,3 +1,59 @@
+## [0.4.0] - 2026-03-17
+
+### Added
+
+- Added automated tests to verify core dashboard logic and user interactions (PR: #85)
+
+### Changed
+
+- Added trend line to scatter plots (in class feedback from Ilya and Issue #90) via (PR #89)
+
+- Added legend to temperature time series on main dashboard (Issue #90) via (PR #94)
+
+- Aligned x-axis labels on plots horizontally rather than vertically (Issue #93) via (PR #94) 
+
+
+### Fixed
+
+- Updated system prompt for LLM to not break (Issue #75) via (PR #95)
+
+- Ensured plot titles are consistent between pages (Issue #83, #90) via (PR #94)
+
+- Fixed AI page UI to show chat portion at all times (Issue #69) via (PR ?)
+
+- **Feedback prioritization issue link:** #75
+
+### Known Issues
+
+- Default filter: The dashboard defaults to the most recent terrestrial month rather than the current day since weather data is seasonal and month-level periods provide a more stable view of trends.
+- KPI comparisons: KPIs compare the selected period with the same calendar period in the previous year to provide a seasonal baseline. A comparison is not included for Std Air Pressure since variability metrics are less meaningful for quick year-over-year comparison.
+- Since the filters on the first page of the dashboard are reactive to each other, the user will need hit the "Reset" button in order to be able to change the Martian Month and Season filters.
+
+### Release Highlight: RAG: Custom Knowledge Base for Querychat
+
+Previously, our chatbot used an LLM that only had access to the dataset schema (column names and types) and general guidelines, without real context. To improve this, we created a folder rag/docs containing three documents with information about Mars, a data dictionary, and details about the rover itself. With RAG (Retrieval-Augmented Generation), the system searches this context bank for relevant information for each user query and provides it to the LLM, ensuring it has the necessary context to answer accurately and improving overall response quality.
+
+- **Option chosen:** C 
+- **PR:** #84
+- **Why this option over the others:** <!-- 1–2 sentences; link to your feature prioritization issue -->
+- **Feature prioritization issue link:**: ?
+
+### Collaboration
+
+Since M3, our collaboration has become more structured and balanced. All members have contributed to coding throughout the project. Task planning through GitHub issues and our branching strategy have minimized merge conflicts and clarified dependencies, improving both efficiency and overall team coordination.
+
+- **CONTRIBUTING.md:** #96
+- **M3 retrospective:** After M3, we made a conscious effort to distribute coding tasks more evenly so all group members contributed. Additionally, we attempted to treat design doc updates as a pre-merge step to keep documentation aligned with code changes, though this was not consistently achieved.
+- **M4:** For M4, we focused on maintaining meaningful PR reviews: all PRs received feedback from at least one external reviewer, and we aimed to ensure these reviews evaluated the PR content thoroughly rather than serving as a mere formality. In addition, we carefully checked and followed the rubric and instructions to avoid missing requirements, ensuring our work aligned closely with milestone expectations.
+
+### Reflection
+
+The dashboard effectively visualizes key Mars weather data and supports related user stories, allowing users to explore trends and KPI comparisons. In addition, the LLM page provides interactive AI-assisted querying of the dataset, giving context-aware responses. Although the targeted users are experts with a strong knowledge of Mars, current limitations, such as the complexity of translating between Martian and terrestrial dates can make some timeline interpretations less intuitive. Another limitation is that the filters on the main dashboard are interdependent; users must hit the "Reset" button before changing these filters from default, which can make exploration less seamless.
+
+Trade-offs: We prioritized addressing critical UI and LLM issues, improving dashboard clarity, and adding context-aware features (e.g., trend lines, legends) over less urgent visual refinements to ensure both functionality and meaningful user feedback were incorporated.
+
+Most useful: The feedback related to the LLM UI, such as ensuring the chat portion is always visible and preventing system prompt errors—shaped our work most this milestone. Other feedback on maintaining consistent and clear visualizations, including trend lines, legends, and axis labels, also guided our improvements. Additional coverage on best practices for integrating RAG with dashboards and providing richer dataset context to the LLM would have been particularly helpful.
+
 ## [0.3.0] - 2026-03-08
 
 ### Added
