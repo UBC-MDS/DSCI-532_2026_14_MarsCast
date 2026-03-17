@@ -453,7 +453,7 @@ def server(input, output, session):
             return
 
         plt.figure()
-        sns.scatterplot(x="pressure", y="min_temp", data=d, color="#FFAD70")
+        sns.regplot(x="pressure", y="min_temp", data=d, scatter_kws={"color": "#FFAD70"}, line_kws={"color": "#E95504"}, ci=None)
         plt.ylabel("Min Temperature (C)")
         plt.xlabel("Air Pressure (Pa)")
         plt.title("Air Pressure vs Minimum Temperature (AI Filtered)")
@@ -497,7 +497,7 @@ def server(input, output, session):
         plt.ylabel("Temperature (C)")
         plt.xlabel("Terrestrial date")
         plt.title("Daily Average Temperatures (AI Filtered)")
-        plt.xticks(rotation=90)
+        plt.xticks(rotation=45)
         plt.legend()
 
     @output
@@ -712,14 +712,14 @@ def server(input, output, session):
         plt.plot(
             filtered["terrestrial_date"],
             filtered["max_temp"],
-            label="Maximum temperature",
+            label="Maximum Temperature",
             color="#C1440E",
         )
         plt.ylabel("Temperature (C)")
-        plt.xlabel("Terrestrial date")
-        plt.title("Daily average temperatures")
-        plt.xticks(rotation=90)
-        plt.plot(legend=False)
+        plt.xlabel("Terrestrial Date")
+        plt.title("Daily Average Temperatures")
+        plt.xticks(rotation=45)
+        plt.legend()
 
     @output
     @render.plot
@@ -728,9 +728,9 @@ def server(input, output, session):
         plt.figure(figsize=(10, 6))
         plt.plot(filtered["terrestrial_date"], filtered["pressure"], color="#FFAD70")
         plt.ylabel("Air Pressure (Pa)")
-        plt.xlabel("Terrestrial date")
-        plt.title("Daily average air pressure")
-        plt.xticks(rotation=90)
+        plt.xlabel("Terrestrial Date")
+        plt.title("Daily Average Air Pressure")
+        plt.xticks(rotation=45)
         plt.plot(legend=False)
 
     @output
@@ -738,10 +738,10 @@ def server(input, output, session):
     def pressure_min_temp_plot():
         filtered = filtered_df()
         plt.figure()
-        sns.scatterplot(x="pressure", y="min_temp", data=filtered, color="#FFAD70")
+        sns.regplot(x="pressure", y="min_temp", data=filtered, scatter_kws={"color": "#FFAD70"}, line_kws={"color": "#E95504"}, ci=None)
         plt.ylabel("Temperature (C)")
         plt.xlabel("Air Pressure (Pa)")
-        plt.title("Air Pressure and Minimum Temperature")
+        plt.title("Air Pressure vs Minimum Temperature")
         plt.xticks(rotation=90)
         plt.plot(legend=False)
 
@@ -750,10 +750,10 @@ def server(input, output, session):
     def pressure_max_temp_plot():
         filtered = filtered_df()
         plt.figure()
-        sns.scatterplot(x="pressure", y="max_temp", data=filtered, color="#C1440E")
+        sns.regplot(x="pressure", y="max_temp", data=filtered, scatter_kws={"color": "#C1440E"}, line_kws={"color": "#543936"}, ci=None)
         plt.ylabel("Temperature (C)")
         plt.xlabel("Air Pressure (Pa)")
-        plt.title("Air Pressure and Maximum Temperature")
+        plt.title("Air Pressure vs Maximum Temperature")
         plt.xticks(rotation=90)
         plt.plot(legend=False)
 

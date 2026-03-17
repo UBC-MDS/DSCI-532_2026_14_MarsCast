@@ -180,6 +180,29 @@ shiny run src/app.py
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
+## Running Tests
+
+This project includes both unit tests and Playwright UI tests.
+
+Run all tests from the repository root with:
+
+```bash
+pytest -q
+```
+
+If Playwright browsers are not installed yet, run:
+
+```bash
+playwright install
+```
+
+The tests cover:
+
+- KPI comparison logic through unit tests
+- Reset behavior on the dashboard
+- Month filter updates to KPI outputs
+- Season filter updates to KPI outputs
+
 ## Acknowledgements
 
 - NASA’s Mars Science Laboratory

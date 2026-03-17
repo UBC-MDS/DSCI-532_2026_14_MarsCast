@@ -2,26 +2,26 @@
 
 ### Added
 
-- Added automated tests to verify core dashboard logic and user interactions (PR: #85)
+- Added automated tests to verify core dashboard logic and user interactions (PR: [#85](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/85))
 
 ### Changed
 
-- Added trend line to scatter plots (in class feedback from Ilya and Issue #90) via (PR #89)
+- Added trend line to scatter plots (in class feedback from Ilya and Issue [#90](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/90)) via (PR [#89](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/89))
 
-- Added legend to temperature time series on main dashboard (Issue #90) via (PR #94)
+- Added legend to temperature time series on main dashboard (Issue [#90](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/90)) via (PR [#94](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/94))
 
-- Aligned x-axis labels on plots horizontally rather than vertically (Issue #93) via (PR #94) 
+- Aligned x-axis labels on plots horizontally rather than vertically (Issue [#93](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/93)) via (PR [#94](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/94)) 
 
 
 ### Fixed
 
-- Updated system prompt for LLM to not break (Issue #75) via (PR #95)
+- Updated system prompt for LLM to not break (Issue [#75](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/75)) via (PR [#95](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/95))
 
-- Ensured plot titles are consistent between pages (Issue #83, #90) via (PR #94)
+- Ensured plot titles are consistent between pages (Issue [#83](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/83), [#90](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/90)) via (PR [#94](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/94))
 
-- Fixed AI page UI to show chat portion at all times (Issue #69) via (PR ?)
+- Fixed AI page UI to show chat portion at all times (Issue [#69](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/69)) via (PR [#84](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/84))
 
-- **Feedback prioritization issue link:** #75
+- **Feedback prioritization issue link:** [#75](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/75)
 
 ### Known Issues
 
@@ -34,15 +34,15 @@
 Previously, our chatbot used an LLM that only had access to the dataset schema (column names and types) and general guidelines, without real context. To improve this, we created a folder rag/docs containing three documents with information about Mars, a data dictionary, and details about the rover itself. With RAG (Retrieval-Augmented Generation), the system searches this context bank for relevant information for each user query and provides it to the LLM, ensuring it has the necessary context to answer accurately and improving overall response quality.
 
 - **Option chosen:** C 
-- **PR:** #84
-- **Why this option over the others:** <!-- 1–2 sentences; link to your feature prioritization issue -->
-- **Feature prioritization issue link:**: ?
+- **PR:** [#84](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/84)
+- **Why this option over the others:** Interpreting Mars data is challenging for Earth-based users, and RAG enables QueryChat to provide accurate, domain-specific guidance to support them.
+- **Feature prioritization issue link:**: [#99](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/issues/99)
 
 ### Collaboration
 
 Since M3, our collaboration has become more structured and balanced. All members have contributed to coding throughout the project. Task planning through GitHub issues and our branching strategy have minimized merge conflicts and clarified dependencies, improving both efficiency and overall team coordination.
 
-- **CONTRIBUTING.md:** #96
+- **CONTRIBUTING.md:** [#96](https://github.com/UBC-MDS/DSCI-532_2026_14_MarsCast/pull/96)
 - **M3 retrospective:** After M3, we made a conscious effort to distribute coding tasks more evenly so all group members contributed. Additionally, we attempted to treat design doc updates as a pre-merge step to keep documentation aligned with code changes, though this was not consistently achieved.
 - **M4:** For M4, we focused on maintaining meaningful PR reviews: all PRs received feedback from at least one external reviewer, and we aimed to ensure these reviews evaluated the PR content thoroughly rather than serving as a mere formality. In addition, we carefully checked and followed the rubric and instructions to avoid missing requirements, ensuring our work aligned closely with milestone expectations.
 
