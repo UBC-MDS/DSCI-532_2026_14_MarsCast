@@ -174,6 +174,33 @@ If you’re unsure about an idea or want feedback before implementing it:
 - Share your proposal and context
 - Engage with maintainers and other contributors
 
+## Retrospective Reflexion on M3
+
+Overall, the team has worked smoothly throughout the project. Since M1, we have maintained strong collaboration. Our typical workflow looks like this:
+
+- Understanding the objectives, scope, and tasks of each milestone as a team, including a brief review of the previous milestone's outcomes
+- Brainstorming ideas and solutions
+- Task distribution and dependency review
+- Individual work on assigned tasks
+- Final review to ensure completeness and timely delivery
+- Work submission
+
+Thanks to this workflow we have maintained good collaboration and feel proud of what we've accomplished.
+
+### What worked well in this milestone
+
+- Rebeca and Sasha paid close attention to milestone requirements we might have overlooked
+- All team members actively reviewed each other's pull requests and provided constructive feedback
+- Everyone contributed to coding tasks
+- Organization and planning through github issues has been working great. We always split the tasks on the first day of the milestone, giving us a clear vision of what needs to be done, highlighting dependencies, and minimizing communication issues.
+- Branching strategy worked smoothly and effectively prevented merge conflicts
+
+### What didn't worked and will be improved
+
+Milestone 3 was particularly challenging due to external circumstances. It coincided with quiz week, which added extra pressure on the whole team. As a result, individual tasks were pushed closer to the deadline than we would have liked, and the final submission came in with very little time to spare.
+
+This was understandable given the circumstances and was not due to bad teamwork. However, for future milestones, we will plan more carefully to ensure tasks are completed earlier, leaving enough room before the deadline.
+
 ## Acknowledgments
 
 Thank you for your interest in contributing to the Mars Weather Dashboard.
