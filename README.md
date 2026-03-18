@@ -74,7 +74,8 @@ These tools were chosen to balance **scientific rigor**, **interactivity**, and 
 - **Time window control** using terrestrial date range filtering for targeted trend inspection  
 - **KPI summary cards** for the filtered subset: average min temperature, average max temperature, average pressure, and pressure standard deviation  
 - **Relationship plots** to explore how air pressure relates to daily temperatures (pressure vs min temp; pressure vs max temp)  
-- **Time series plots** showing temperature and pressure trends over sols, updating live with filter changes  
+- **Time series plots** showing temperature and pressure trends over sols, updating live with filter changes
+- **AI assistant page** with an LLM-powered chatbot for queries and insights, enhanced with Retrieval-Augmented Generation (RAG) for improved contextual accuracy  
 
 ---
 
@@ -178,6 +179,29 @@ shiny run src/app.py
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+
+## Running Tests
+
+This project includes both unit tests and Playwright UI tests.
+
+Run all tests from the repository root with:
+
+```bash
+pytest -q
+```
+
+If Playwright browsers are not installed yet, run:
+
+```bash
+playwright install
+```
+
+The tests cover:
+
+- KPI comparison logic through unit tests
+- Reset behavior on the dashboard
+- Month filter updates to KPI outputs
+- Season filter updates to KPI outputs
 
 ## Acknowledgements
 
