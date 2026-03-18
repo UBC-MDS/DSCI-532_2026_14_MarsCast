@@ -36,7 +36,7 @@
 | `title` | Output | `@render.text` | `title_val` | #3, #4 |
 
 ### Reactivity Diagram
-
+```markdown
 ```mermaid
 ---
 config:
@@ -102,6 +102,7 @@ flowchart LR
     style KPI2_Logic fill:#f9f9f9,stroke:#cccccc,stroke-dasharray: 5 5
     style Plot2_Logic fill:#f9f9f9,stroke:#cccccc,stroke-dasharray: 5 5
 ```
+
 
 ![](../img/updated_diagram.png)
 
